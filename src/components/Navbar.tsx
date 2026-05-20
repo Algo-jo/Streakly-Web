@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, FolderOpen, Briefcase, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, Briefcase, BarChart3, Users, User } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface NavbarProps {
@@ -11,8 +11,10 @@ export function Navbar({ activeTab, setActiveTab }: NavbarProps) {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'logs', label: 'Repository', icon: FolderOpen },
-    { id: 'projects', label: 'Project', icon: Briefcase },
+    { id: 'projects', label: 'Activity', icon: Briefcase },
     { id: 'calendar', label: 'Contribution', icon: BarChart3 },
+    { id: 'following', label: 'Following', icon: Users },
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   return (

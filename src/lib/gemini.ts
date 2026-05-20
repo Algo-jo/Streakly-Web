@@ -10,6 +10,8 @@ export interface WorkLog {
   category: "code" | "note" | "paper" | "other";
   timestamp: number;
   dateStr: string;
+  priority?: "NONE" | "LOW" | "MID" | "HIGH";
+  files?: { name: string; size: string; previewUrl?: string }[];
   metadata?: {
     repo?: string;
     folder?: string;
