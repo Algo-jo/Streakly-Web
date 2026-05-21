@@ -18,7 +18,7 @@ export function Navbar({ activeTab, setActiveTab }: NavbarProps) {
   ];
 
   return (
-    <nav className="w-full bg-background/80 border-b border-zinc-800/50 backdrop-blur-xl sticky top-0 z-50">
+    <nav className="w-full bg-background/80 border-b border-zinc-500/50 backdrop-blur-xl sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 h-20 flex items-center justify-between">
         <div className="flex items-center gap-12 h-full">
           <div className="flex items-center gap-2 mr-4">
@@ -52,7 +52,7 @@ export function Navbar({ activeTab, setActiveTab }: NavbarProps) {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">
+          <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-500 flex items-center justify-center text-zinc-500 hover:text-white transition-colors cursor-pointer">
             <LayoutDashboard className="w-5 h-5" />
           </div>
         </div>

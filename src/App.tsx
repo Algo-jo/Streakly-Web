@@ -29,7 +29,7 @@ export default function App() {
   const [profile, setProfile] = useState<any>(() => {
     const saved = localStorage.getItem('streakly_profile');
     const defaultProfile = {
-      name: 'Algo-Jo',
+      name: 'Algo-Jo7',
       role: 'Full-Stack Developer',
       bio: 'Keep building, keep growing, one code log at a time.',
       github: 'algo-jo',
@@ -180,7 +180,7 @@ export default function App() {
               <div className="lg:col-span-8 space-y-12">
                 <section className="space-y-8">
                   <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-8 bg-[#0F1317] rounded-3xl border border-zinc-800/50">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-8 bg-[#0F1317] rounded-3xl border border-zinc-500/80">
                     <div className="space-y-1">
                       <h3 className="text-2xl font-bold text-white tracking-tight">You are on {streak} Days Streak</h3>
                       <p className="text-sm text-zinc-400 font-medium">Consistency is the key to mastery. Keep it up!</p>
@@ -196,7 +196,7 @@ export default function App() {
                         <Plus className="w-5 h-5 mr-2" />
                         Add Activity
                       </DialogTrigger>
-                      <DialogContent className={`bg-zinc-950 border-zinc-800 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
+                      <DialogContent className={`bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
                         modalStep === 'select' ? 'sm:max-w-[650px]' : addFormStep === 1 ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
                       }`}>
                         <DialogHeader className="p-8 pb-0 flex-shrink-0">
@@ -215,7 +215,7 @@ export default function App() {
                                 }}
                                 className="group flex flex-col items-center justify-center gap-4 p-8 rounded-3xl border-2 border-zinc-900 bg-zinc-900/30 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300"
                               >
-                                <div className="w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-800 group-hover:border-emerald-500/50 transition-colors">
+                                <div className="w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-500 group-hover:border-emerald-500/50 transition-colors">
                                   <FolderOpen className="w-8 h-8 text-emerald-500" />
                                 </div>
                                 <div className="text-center">
@@ -231,7 +231,7 @@ export default function App() {
                                 }}
                                 className="group flex flex-col items-center justify-center gap-4 p-8 rounded-3xl border-2 border-zinc-900 bg-zinc-900/30 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300"
                               >
-                                <div className="w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-800 group-hover:border-emerald-500/50 transition-colors">
+                                <div className="w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-500 group-hover:border-emerald-500/50 transition-colors">
                                   <Briefcase className="w-8 h-8 text-emerald-500" />
                                 </div>
                                 <div className="text-center">
@@ -268,8 +268,8 @@ export default function App() {
                   </div>
 
                   {prioritizedActivities.length === 0 ? (
-                    <div className="p-12 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-800 flex flex-col items-center text-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-800">
+                    <div className="p-12 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500 flex flex-col items-center text-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-500">
                         <Sparkles className="w-5 h-5 text-zinc-500" />
                       </div>
                       <div className="space-y-1">
@@ -309,7 +309,7 @@ export default function App() {
                               <span className={`text-[9px] font-black tracking-widest uppercase border px-2.5 py-0.5 rounded-full ${badgeClass}`}>
                                 {act.priority} PRIORITY
                               </span>
-                              <span className="text-[9px] text-zinc-500 font-bold tracking-tight bg-zinc-950/40 px-2 py-0.5 rounded border border-zinc-800 font-mono">
+                              <span className="text-[9px] text-zinc-500 font-bold tracking-tight bg-zinc-950/40 px-2 py-0.5 rounded border border-zinc-500 font-mono">
                                 {format(act.timestamp, 'MMM d')}
                               </span>
                             </div>
@@ -336,7 +336,7 @@ export default function App() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {logs.filter(l => l.category === 'code').slice(0, 4).map((log) => (
-                      <div key={log.id} className="p-6 bg-[#0F1317] rounded-3xl border border-zinc-800/50 hover:border-emerald-500/30 transition-all group cursor-pointer">
+                      <div key={log.id} className="p-6 bg-[#0F1317] rounded-3xl border border-zinc-500/50 hover:border-emerald-500/30 transition-all group cursor-pointer">
                         <div className="flex justify-between items-start mb-4">
                           <h4 className="text-emerald-500 font-bold text-sm tracking-tight">{log.title}</h4>
                           <Plus className="w-4 h-4 text-zinc-500 group-hover:text-emerald-500 transition-colors rotate-45" />
@@ -345,8 +345,8 @@ export default function App() {
                       </div>
                     ))}
                     {logs.filter(l => l.category === 'code').length === 0 && (
-                      <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-800/50 flex flex-col items-center text-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-zinc-800">
+                      <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500 flex flex-col items-center text-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-zinc-500">
                           <Plus className="w-6 h-6 text-zinc-500" />
                         </div>
                         <p className="text-zinc-400 text-sm font-medium">No repositories logged yet. Start by adding a code log!</p>
@@ -362,11 +362,11 @@ export default function App() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {logs.filter(l => l.category !== 'code').slice(0, 4).map((log) => (
-                      <div key={log.id} className="p-6 bg-[#0F1317] rounded-3xl border border-zinc-800/50 hover:border-emerald-500/30 transition-all group cursor-pointer">
+                      <div key={log.id} className="p-6 bg-[#0F1317] rounded-3xl border border-zinc-500/50 hover:border-emerald-500/30 transition-all group cursor-pointer">
                         <div className="flex justify-between items-start mb-4">
                           <h4 className="text-emerald-500 font-bold text-sm tracking-tight">{log.title}</h4>
                           {log.priority && log.priority !== 'NONE' && (
-                            <span className="text-[8px] font-black tracking-widest px-1.5 py-0.5 border border-zinc-800 text-zinc-400 bg-zinc-900 rounded uppercase leading-none">
+                            <span className="text-[8px] font-black tracking-widest px-1.5 py-0.5 border border-zinc-500 text-zinc-400 bg-zinc-900 rounded uppercase leading-none">
                               {log.priority}
                             </span>
                           )}
@@ -375,8 +375,8 @@ export default function App() {
                       </div>
                     ))}
                     {logs.filter(l => l.category !== 'code').length === 0 && (
-                      <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-800/50 flex flex-col items-center text-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-zinc-800">
+                      <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500 flex flex-col items-center text-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-zinc-500">
                           <Plus className="w-6 h-6 text-zinc-500" />
                         </div>
                         <p className="text-zinc-400 text-sm font-medium">No activities logged yet. Start by adding an activity!</p>
@@ -404,7 +404,7 @@ export default function App() {
                   <Button 
                     onClick={handleAnalyze}
                     disabled={loadingAnalysis || logs.length === 0}
-                    className="w-full bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800/50 text-zinc-300 text-xs font-bold py-7 rounded-2xl transition-all tracking-widest"
+                    className="w-full bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-500/50 text-zinc-300 text-xs font-bold py-7 rounded-2xl transition-all tracking-widest"
                   >
                     {loadingAnalysis ? 'ANALYZING...' : 'REFRESH ANALYSIS'}
                   </Button>
@@ -454,7 +454,7 @@ export default function App() {
               className="max-w-4xl mx-auto"
             >
               <h2 className="text-2xl font-black text-white mb-8">Contribution History</h2>
-              <div className="bg-[#0F1317] p-8 rounded-3xl border border-zinc-800/50">
+              <div className="bg-[#0F1317] p-8 rounded-3xl border border-zinc-500/50">
                 <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
               </div>
             </motion.div>
@@ -501,7 +501,7 @@ export default function App() {
          <AnimatePresence>
            {editingLog && (
              <Dialog open={!!editingLog} onOpenChange={(open) => { if (!open) setEditingLog(null); }}>
-               <DialogContent className={`bg-zinc-950 border-zinc-800 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
+               <DialogContent className={`bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
                  editingLogStep === 1 ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
                }`}>
                  <DialogHeader className="p-8 pb-0 flex-shrink-0">

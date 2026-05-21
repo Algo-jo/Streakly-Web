@@ -14,13 +14,13 @@ export function CalendarView({ logs }: CalendarViewProps) {
   const loggedDays = logs.map(log => new Date(log.timestamp));
 
   return (
-    <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-3xl p-8 backdrop-blur-sm">
+    <div className="bg-zinc-900/40 border border-zinc-500/50 rounded-3xl p-8 backdrop-blur-sm">
       <div className="flex justify-center">
         <Calendar
           mode="single"
           selected={date}
           onSelect={setDate}
-          className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4"
+          className="rounded-2xl border border-zinc-500 bg-zinc-950 p-4"
           modifiers={{
             logged: loggedDays,
           }}
@@ -39,7 +39,7 @@ export function CalendarView({ logs }: CalendarViewProps) {
         {date && logs.filter(l => isSameDay(new Date(l.timestamp), date)).length > 0 ? (
           <div className="space-y-3">
             {logs.filter(l => isSameDay(new Date(l.timestamp), date)).map(log => (
-              <div key={log.id} className="p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+              <div key={log.id} className="p-4 bg-zinc-950 rounded-xl border border-zinc-500">
                 <p className="text-sm font-bold text-emerald-500">{log.title}</p>
                 <p className="text-xs text-zinc-500 mt-1 line-clamp-1">{log.content}</p>
               </div>

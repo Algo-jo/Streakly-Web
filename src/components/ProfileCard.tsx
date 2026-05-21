@@ -27,7 +27,7 @@ export function ProfileCard({ streak, activityCount, profile, onEditClick }: Pro
     : 'U';
 
   return (
-    <div className="flex flex-col items-center text-center p-10 bg-[#0F1317] rounded-[2.5rem] border border-zinc-800/30 backdrop-blur-md">
+    <div className="flex flex-col items-center text-center p-10 bg-[#0F1317] rounded-[2.5rem] border border-zinc-500/30 backdrop-blur-md">
       <div className="relative mb-8 group">
         <div className="absolute -inset-1 bg-emerald-500/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         <div className="relative w-48 h-48 bg-zinc-950 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(16,185,129,0.15)] border-4 border-zinc-900 overflow-hidden text-white">
@@ -60,12 +60,12 @@ export function ProfileCard({ streak, activityCount, profile, onEditClick }: Pro
         Edit Profile
       </Button>
 
-      <div className="grid grid-cols-3 gap-4 w-full pt-8 border-t border-zinc-800/50 text-white">
+      <div className="grid grid-cols-3 gap-4 w-full pt-8 border-t border-zinc-500/50 text-white">
         <div className="flex flex-col items-center gap-1">
           <span className="text-xl font-bold tracking-tight font-mono text-emerald-400">{activityCount}</span>
           <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.1em] text-center">Activities</span>
         </div>
-        <div className="flex flex-col items-center gap-1 border-x border-zinc-800/50 px-1">
+        <div className="flex flex-col items-center gap-1 border-x border-zinc-500/50 px-1">
           <span className="text-xl font-bold tracking-tight font-mono text-white">{profile?.followersCount || '1,280'}</span>
           <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.1em] text-center">Followers</span>
         </div>

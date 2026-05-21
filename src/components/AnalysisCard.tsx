@@ -13,7 +13,7 @@ interface AnalysisCardProps {
 export function AnalysisCard({ analysis, loading }: AnalysisCardProps) {
   if (loading) {
     return (
-      <Card className="bg-zinc-900 border-zinc-800 animate-pulse">
+      <Card className="bg-zinc-900 border-zinc-500 animate-pulse">
         <CardContent className="h-[300px] flex items-center justify-center">
           <Brain className="w-8 h-8 text-zinc-700 animate-bounce" />
         </CardContent>
@@ -24,7 +24,7 @@ export function AnalysisCard({ analysis, loading }: AnalysisCardProps) {
   if (!analysis) return null;
 
   return (
-    <Card className="bg-zinc-900 border-zinc-800 overflow-hidden relative">
+    <Card className="bg-zinc-900 border-zinc-500 overflow-hidden relative">
       <div className="absolute top-0 right-0 p-4 opacity-10">
         <Brain className="w-24 h-24" />
       </div>
@@ -42,7 +42,7 @@ export function AnalysisCard({ analysis, loading }: AnalysisCardProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 bg-zinc-950 rounded-lg border border-zinc-800">
+          <div className="p-4 bg-zinc-950 rounded-lg border border-zinc-500">
             <div className="flex items-center gap-2 text-zinc-500 text-xs uppercase tracking-wider mb-1">
               <TrendingUp className="w-3 h-3" />
               Efficiency
@@ -51,7 +51,7 @@ export function AnalysisCard({ analysis, loading }: AnalysisCardProps) {
               {analysis.productivityScore}%
             </div>
           </div>
-          <div className="p-4 bg-zinc-950 rounded-lg border border-zinc-800">
+          <div className="p-4 bg-zinc-950 rounded-lg border border-zinc-500">
             <div className="flex items-center gap-2 text-zinc-500 text-xs uppercase tracking-wider mb-1">
               <Brain className="w-3 h-3" />
               Focus Areas

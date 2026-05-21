@@ -137,8 +137,8 @@ export function FollowingSection() {
     <div className="space-y-8 animate-in fade-in duration-300">
       
       {/* Top Banner & Control Board */}
-      <div className="bg-[#0F1317] border border-zinc-800/40 rounded-[2rem] p-6 md:p-8 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800/20 pb-4">
+      <div className="bg-[#0F1317] border border-zinc-500/40 rounded-[2rem] p-6 md:p-8 space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-500/20 pb-4">
           <div className="space-y-1">
             <h3 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
               <Users className="w-5 h-5 text-emerald-500" /> Peer Connections
@@ -186,7 +186,7 @@ export function FollowingSection() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={subTab === 'followed' ? "Search within your followed peers..." : "Search new developers by name or title..."}
-            className="bg-zinc-950 border-zinc-800 focus:border-emerald-500/50 pl-12 h-14 rounded-2xl text-sm font-semibold text-white focus:ring-emerald-500"
+            className="bg-zinc-950 border-zinc-500 focus:border-emerald-500/50 pl-12 h-14 rounded-2xl text-sm font-semibold text-white focus:ring-emerald-500"
           />
         </div>
 
@@ -199,7 +199,7 @@ export function FollowingSection() {
               className={`px-4 py-1.5 rounded-full text-xs font-black transition-all ${
                 selectedTag === null
                   ? 'bg-emerald-500 text-black border-emerald-400 font-extrabold'
-                  : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-white'
+                  : 'bg-zinc-950 border border-zinc-500 text-zinc-400 hover:bg-zinc-900 hover:text-white'
               }`}
             >
               ALL SPECIALTIES
@@ -211,7 +211,7 @@ export function FollowingSection() {
                 className={`px-4 py-1.5 rounded-full text-xs font-black transition-all uppercase ${
                   selectedTag === tag
                     ? 'bg-emerald-500 text-black font-extrabold'
-                    : 'bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-white'
+                    : 'bg-zinc-950 border border-zinc-500 text-zinc-400 hover:text-white'
                 }`}
               >
                 #{tag}
@@ -238,7 +238,7 @@ export function FollowingSection() {
             return (
               <div 
                 key={dev.id} 
-                className="flex items-center justify-between p-5 bg-[#0F1317] border border-zinc-800/40 rounded-3xl group hover:border-emerald-500/30 transition-all shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_10px_30px_rgba(16,185,129,0.02)]"
+                className="flex items-center justify-between p-5 bg-[#0F1317] border border-zinc-500/40 rounded-3xl group hover:border-emerald-500/30 transition-all shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_10px_30px_rgba(16,185,129,0.02)]"
               >
                 {/* Developer details metadata */}
                 <div className="flex items-center gap-4 min-w-0">
@@ -291,7 +291,7 @@ export function FollowingSection() {
           })}
 
           {displayedDevs.length === 0 && (
-            <div className="col-span-1 md:col-span-2 text-center py-16 p-10 bg-[#0F1317] border border-dashed border-zinc-800/40 rounded-3xl text-zinc-500 flex flex-col items-center justify-center gap-4">
+            <div className="col-span-1 md:col-span-2 text-center py-16 p-10 bg-[#0F1317] border border-dashed border-zinc-500/40 rounded-3xl text-zinc-500 flex flex-col items-center justify-center gap-4">
               <p className="text-sm font-semibold text-zinc-400 leading-relaxed">
                 {subTab === 'followed' 
                   ? "Your following feed is currently empty. You aren't following anyone yet!" 

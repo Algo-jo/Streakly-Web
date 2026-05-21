@@ -155,7 +155,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                   placeholder={mode === 'repo' ? "e.g. Streakly Dashboard" : "What activity are you working on?"}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="bg-zinc-900/50 border-zinc-800 h-14 text-base font-bold focus:ring-emerald-500/50 rounded-2xl px-6"
+                  className="bg-zinc-900/50 border-zinc-500 h-14 text-base font-bold focus:ring-emerald-500/50 rounded-2xl px-6"
                   required
                 />
               </div>
@@ -168,7 +168,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                     placeholder="A brief summary of this activity..."
                     value={quickDesc}
                     onChange={(e) => setQuickDesc(e.target.value)}
-                    className="bg-zinc-900/50 border-zinc-800 h-12 text-sm font-medium focus:ring-emerald-500/50 rounded-2xl px-6"
+                    className="bg-zinc-900/50 border-zinc-500 h-12 text-sm font-medium focus:ring-emerald-500/50 rounded-2xl px-6"
                   />
                 </div>
               )}
@@ -184,7 +184,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                         placeholder="owner/repo"
                         value={repo}
                         onChange={(e) => setRepo(e.target.value)}
-                        className="bg-zinc-900/50 border-zinc-800 pl-11 h-12 rounded-2xl text-sm font-mono"
+                        className="bg-zinc-900/50 border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono"
                       />
                     </div>
                   </div>
@@ -196,7 +196,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                         placeholder="src/components"
                         value={folder}
                         onChange={(e) => setFolder(e.target.value)}
-                        className="bg-zinc-900/50 border-zinc-800 pl-11 h-12 rounded-2xl text-sm font-mono"
+                        className="bg-zinc-900/50 border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono"
                       />
                     </div>
                   </div>
@@ -209,7 +209,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                     <select
                       value={repo}
                       onChange={(e) => setRepo(e.target.value)}
-                      className="w-full bg-zinc-900/50 border border-zinc-800 pl-11 h-12 rounded-2xl text-sm font-mono appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-zinc-300"
+                      className="w-full bg-zinc-900/50 border border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-zinc-300"
                     >
                       <option value="">None</option>
                       {existingRepos.map(r => (
@@ -240,7 +240,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                               p === 'LOW' ? 'bg-blue-500/10 text-blue-300 border-blue-500/50' :
                               p === 'MID' ? 'bg-amber-500/10 text-amber-300 border-amber-500/50' :
                               'bg-red-500/10 text-red-300 border-red-500/50'
-                            : 'bg-zinc-900/30 text-zinc-400 hover:bg-zinc-900 border-zinc-800'
+                            : 'bg-zinc-900/30 text-zinc-400 hover:bg-zinc-900 border-zinc-500'
                         }`}
                       >
                         {p}
@@ -259,7 +259,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                     placeholder="ui, refactor, bugfix"
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
-                    className="bg-zinc-900/50 border-zinc-800 pl-11 h-12 rounded-2xl text-sm"
+                    className="bg-zinc-900/50 border-zinc-500 pl-11 h-12 rounded-2xl text-sm"
                   />
                 </div>
               </div>
@@ -281,7 +281,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                   className={`border border-dashed rounded-xl py-3 px-4 text-center cursor-pointer transition-all ${
                     isDragging 
                       ? 'border-emerald-500 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
-                      : 'border-zinc-800 bg-zinc-900/10 hover:border-zinc-700 hover:bg-zinc-900/20'
+                      : 'border-zinc-500 bg-zinc-900/10 hover:border-zinc-700 hover:bg-zinc-900/20'
                   }`}
                 >
                   <input
@@ -303,12 +303,12 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                 {files.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 max-h-[120px] overflow-y-auto pr-2">
                     {files.map((file, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2.5 bg-zinc-900/50 rounded-xl border border-zinc-800 text-xs">
+                      <div key={idx} className="flex items-center justify-between p-2.5 bg-zinc-900/50 rounded-xl border border-zinc-500 text-xs">
                         <div className="flex items-center gap-2.5 min-w-0">
                           {file.previewUrl ? (
-                            <img src={file.previewUrl} alt={file.name} className="w-8 h-8 object-cover rounded-lg border border-zinc-800 shrink-0" />
+                            <img src={file.previewUrl} alt={file.name} className="w-8 h-8 object-cover rounded-lg border border-zinc-500 shrink-0" />
                           ) : (
-                            <div className="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center border border-zinc-800 shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center border border-zinc-500 shrink-0">
                               <Paperclip className="w-3.5 h-3.5 text-zinc-500" />
                             </div>
                           )}
@@ -340,7 +340,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                     placeholder={mode === 'repo' ? "Document your repository progress here... (Use rich text / markdown if needed)" : "Work hard & document detail. State clearly your tasks, code snippets, or logs..."}
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="bg-zinc-900/60 border-zinc-800 min-h-[350px] md:min-h-[420px] p-6 focus:ring-emerald-500/50 rounded-3xl resize-y text-zinc-100 leading-relaxed font-mono text-sm shadow-inner"
+                    className="bg-zinc-900/60 border-zinc-500 min-h-[350px] md:min-h-[420px] p-6 focus:ring-emerald-500/50 rounded-3xl resize-y text-zinc-100 leading-relaxed font-mono text-sm shadow-inner"
                     style={{ lineHeight: '1.6' }}
                     required
                   />
@@ -362,7 +362,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                 setStep(1);
                 if (onStepChange) onStepChange(1);
               }}
-              className="px-6 h-14 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:text-white text-zinc-300 font-bold rounded-2xl transition-all flex items-center gap-2 shrink-0"
+              className="px-6 h-14 bg-zinc-900 border border-zinc-500 hover:bg-zinc-800 hover:text-white text-zinc-300 font-bold rounded-2xl transition-all flex items-center gap-2 shrink-0"
             >
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>

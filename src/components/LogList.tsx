@@ -26,7 +26,7 @@ export function LogList({ logs, onEdit }: LogListProps) {
 
   if (logs.length === 0) {
     return (
-      <div className="text-center py-12 bg-zinc-900/20 border border-dashed border-zinc-800 rounded-3xl">
+      <div className="text-center py-12 bg-zinc-900/20 border border-dashed border-zinc-500 rounded-3xl">
         <p className="text-zinc-500 text-sm">No activities logged yet. Your journey starts here!</p>
       </div>
     );
@@ -42,16 +42,16 @@ export function LogList({ logs, onEdit }: LogListProps) {
           HIGH: 'border-red-500/30 text-red-400 bg-red-500/10',
           MID: 'border-amber-500/30 text-amber-400 bg-amber-500/10',
           LOW: 'border-blue-500/30 text-blue-400 bg-blue-500/10',
-          NONE: 'border-zinc-800 text-zinc-500 bg-zinc-900/40',
+          NONE: 'border-zinc-500 text-zinc-500 bg-zinc-900/40',
         };
 
         const hasPriority = log.priority && log.priority !== 'NONE';
 
         return (
-          <div key={log.id} className="bg-[#0F1317] border border-zinc-800/50 rounded-3xl p-6 hover:border-emerald-500/30 transition-all group">
+          <div key={log.id} className="bg-[#0F1317] border border-zinc-500/50 rounded-3xl p-6 hover:border-emerald-500/30 transition-all group">
             <div className="flex justify-between items-start mb-4 gap-2">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 group-hover:border-emerald-500/50 transition-colors">
+                <div className="p-3 bg-zinc-950 rounded-2xl border border-zinc-500 group-hover:border-emerald-500/50 transition-colors">
                   <Icon className="w-5 h-5 text-emerald-500" />
                 </div>
                 <div>
@@ -74,14 +74,14 @@ export function LogList({ logs, onEdit }: LogListProps) {
                   </Badge>
                 )}
 
-                <Badge variant="outline" className="text-[10px] font-bold tracking-widest uppercase border-zinc-800 text-zinc-500 px-3 py-1 rounded-full bg-zinc-900/20">
+                <Badge variant="outline" className="text-[10px] font-bold tracking-widest uppercase border-zinc-500 text-zinc-500 px-3 py-1 rounded-full bg-zinc-900/20">
                   {log.category === 'code' ? 'Repository code' : 'Activity log'}
                 </Badge>
 
                 {onEdit && (
                   <button
                     onClick={() => onEdit(log)}
-                    className="p-2 bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)] ml-1"
+                    className="p-2 bg-zinc-950 border border-zinc-500 text-zinc-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)] ml-1"
                     title="Edit Activity"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -99,7 +99,7 @@ export function LogList({ logs, onEdit }: LogListProps) {
                   </div>
                 )}
                 {log.metadata.folder && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-950 text-zinc-400 text-[10px] font-bold rounded-full border border-zinc-800 font-mono">
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-950 text-zinc-400 text-[10px] font-bold rounded-full border border-zinc-500 font-mono">
                     <Folder className="w-3 h-3" />
                     {log.metadata.folder}
                   </div>
@@ -118,13 +118,13 @@ export function LogList({ logs, onEdit }: LogListProps) {
               </p>
             )}
 
-            <div className="text-sm text-zinc-400 prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl mb-4">
+            <div className="text-sm text-zinc-400 prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-zinc-500 prose-pre:rounded-xl mb-4">
               <ReactMarkdown>{log.content}</ReactMarkdown>
             </div>
 
             {/* Attached Files display section */}
             {log.files && log.files.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-zinc-800/30">
+              <div className="mt-4 pt-4 border-t border-zinc-500/30">
                 <p className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                   <Paperclip className="w-3.5 h-3.5 text-zinc-600" />
                   Attached Files ({log.files.length})
@@ -134,13 +134,13 @@ export function LogList({ logs, onEdit }: LogListProps) {
                     <div 
                       key={idx} 
                       onClick={() => handleSimulatedDownload(file.name)}
-                      className="flex items-center justify-between p-2.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-900 hover:border-zinc-800 rounded-xl cursor-pointer transition-all group/file text-xs"
+                      className="flex items-center justify-between p-2.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-900 hover:border-zinc-500 rounded-xl cursor-pointer transition-all group/file text-xs"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         {file.previewUrl ? (
-                          <img src={file.previewUrl} alt={file.name} className="w-8 h-8 object-cover rounded-lg border border-zinc-800" />
+                          <img src={file.previewUrl} alt={file.name} className="w-8 h-8 object-cover rounded-lg border border-zinc-500" />
                         ) : (
-                          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500">
+                          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-500 flex items-center justify-center text-zinc-500">
                             <Paperclip className="w-3.5 h-3.5" />
                           </div>
                         )}

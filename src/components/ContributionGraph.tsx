@@ -247,7 +247,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
   };
 
   return (
-    <div className="flex flex-col gap-6 p-8 bg-[#0F1317] rounded-[2.2rem] border border-zinc-800/50 backdrop-blur-sm relative">
+    <div className="flex flex-col gap-6 p-8 bg-[#0F1317] rounded-[2.2rem] border border-zinc-500/80 backdrop-blur-sm relative">
       
       {/* Detail Dialog Popup Wrapper */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
@@ -289,7 +289,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
               
               {/* Highest Streak Card */}
               <div className="bg-[#0F1317] border border-zinc-900 p-5 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-800">
+                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500">
                   <Flame className="w-6 h-6 fill-emerald-500/10 text-emerald-400 animate-pulse" />
                 </div>
                 <div className="space-y-0.5">
@@ -313,7 +313,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
 
               {/* Total Day Log This Month Card */}
               <div className="bg-[#0F1317] border border-zinc-900 p-5 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-800">
+                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500">
                   <Calendar className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div className="space-y-0.5">
@@ -325,7 +325,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
 
               {/* Consistency Percentage Card */}
               <div className="bg-[#0F1317] border border-zinc-900 p-5 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-800">
+                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500">
                   <Clock className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div className="space-y-0.5">
@@ -357,11 +357,11 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
                     return (
                       <div 
                         key={log.id}
-                        className="bg-zinc-950 rounded-2xl p-4 border border-zinc-900 hover:border-zinc-800 transition-all space-y-3"
+                        className="bg-zinc-950 rounded-2xl p-4 border border-zinc-900 hover:border-zinc-500 transition-all space-y-3"
                       >
                         <div className="flex justify-between items-start gap-4">
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-400 shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-500 flex items-center justify-center text-emerald-400 shrink-0">
                               <CatIcon className="w-4 h-4" />
                             </div>
                             <h5 className="font-extrabold text-sm text-zinc-100 line-clamp-1 leading-tight">{log.title}</h5>
@@ -462,9 +462,9 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
                         selectedDateStr === dateStr && "ring-1 ring-emerald-400"
                       )}
                     >
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-zinc-950 text-[10px] font-mono text-zinc-200 rounded-xl border border-zinc-800 opacity-0 group-hover:opacity-100 pointer-events-none transition-all scale-75 group-hover:scale-100 whitespace-nowrap z-[100] shadow-2xl">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-zinc-950 text-[10px] font-mono text-zinc-200 rounded-xl border border-zinc-500 opacity-0 group-hover:opacity-100 pointer-events-none transition-all scale-75 group-hover:scale-100 whitespace-nowrap z-[100] shadow-2xl">
                         <div className="flex flex-col gap-1">
-                          <span className="text-emerald-500 font-bold border-b border-zinc-800 pb-1 mb-1">{format(day, 'EEEE, MMM d')}</span>
+                          <span className="text-emerald-500 font-bold border-b border-zinc-500 pb-1 mb-1">{format(day, 'EEEE, MMM d')}</span>
                           <span>{logCount} {logCount === 1 ? 'contribution' : 'contributions'}</span>
                           <span className="text-[8px] text-zinc-500 uppercase mt-0.5 font-bold">Click to view detail</span>
                         </div>
@@ -478,7 +478,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
         </div>
       </div>
 
-      <div className="flex justify-between items-center pt-4 border-t border-zinc-800/50">
+      <div className="flex justify-between items-center pt-4 border-t border-zinc-500/50">
         <span className="text-[10px] font-medium text-zinc-500">Learn how we count contributions</span>
         <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
           <span>Less</span>
