@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { LogForm } from './components/LogForm';
+import { Auth } from './components/Auth';
 import { LogList } from './components/LogList';
 import { ContributionGraph } from './components/ContributionGraph';
 import { ProfileCard } from './components/ProfileCard';
@@ -15,6 +16,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('streakly_authenticated') === 'true';
+  });
   const [activeTab, setActiveTab] = useState('dashboard');
   const [logs, setLogs] = useState<WorkLog[]>([]);
   const [analysis, setAnalysis] = useState<ProductivityAnalysis | null>(null);
@@ -22,20 +26,32 @@ export default function App() {
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [modalStep, setModalStep] = useState<'select' | 'form'>('select');
   const [selectedMode, setSelectedMode] = useState<'repo' | 'activity'>('repo');
-  const [user, setUser] = useState<any>(null); // Mock user for now
+  const [user, setUser] = useState<any>(null);
   const [addFormStep, setAddFormStep] = useState(1);
   const [editingLogStep, setEditingLogStep] = useState(1);
+
+  const handleAuthSuccess = (profileData: any) => {
+    setProfile(profileData);
+    setIsAuthenticated(true);
+    localStorage.setItem('streakly_profile', JSON.stringify(profileData));
+    localStorage.setItem('streakly_authenticated', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('streakly_authenticated');
+  };
 
   const [profile, setProfile] = useState<any>(() => {
     const saved = localStorage.getItem('streakly_profile');
     const defaultProfile = {
-      name: 'Algo-Jo7',
+      name: 'Algo-Jo',
       role: 'Full-Stack Developer',
       bio: 'Keep building, keep growing, one code log at a time.',
       github: 'algo-jo',
       techStack: 'React, Node.js, TypeScript, Tailwind',
       highestStreak: '92',
-      avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
+      avatarUrl: '',
       followersCount: '1280',
       followingCount: '340',
     };
@@ -159,11 +175,16 @@ export default function App() {
       return b.timestamp - a.timestamp;
     });
 
+  if (!isAuthenticated) {
+    return <Auth onLoginSuccess={handleAuthSuccess} />;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       <Navbar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
+        onLogout={handleLogout}
       />
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 sm:px-8 py-12">
@@ -180,7 +201,7 @@ export default function App() {
               <div className="lg:col-span-8 space-y-12">
                 <section className="space-y-8">
                   <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-8 bg-[#0F1317] rounded-3xl border border-zinc-500/80">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-8 bg-[#0F1317] rounded-3xl border border-zinc-500/50">
                     <div className="space-y-1">
                       <h3 className="text-2xl font-bold text-white tracking-tight">You are on {streak} Days Streak</h3>
                       <p className="text-sm text-zinc-400 font-medium">Consistency is the key to mastery. Keep it up!</p>
@@ -345,7 +366,7 @@ export default function App() {
                       </div>
                     ))}
                     {logs.filter(l => l.category === 'code').length === 0 && (
-                      <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500 flex flex-col items-center text-center gap-4">
+                      <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500/50 flex flex-col items-center text-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-zinc-500">
                           <Plus className="w-6 h-6 text-zinc-500" />
                         </div>
@@ -375,7 +396,7 @@ export default function App() {
                       </div>
                     ))}
                     {logs.filter(l => l.category !== 'code').length === 0 && (
-                      <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500 flex flex-col items-center text-center gap-4">
+                      <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500/50 flex flex-col items-center text-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-zinc-500">
                           <Plus className="w-6 h-6 text-zinc-500" />
                         </div>
@@ -393,6 +414,7 @@ export default function App() {
                   activityCount={logs.length} 
                   profile={profile} 
                   onEditClick={() => setActiveTab('profile')} 
+                  onLogout={handleLogout}
                 />
                 
                 <div className="space-y-6">
@@ -492,7 +514,7 @@ export default function App() {
                   <p className="text-sm text-zinc-500 font-semibold mt-1">Configure Display Settings, Tech Stack and personal Bio attributes</p>
                 </div>
               </div>
-              <ProfileEdit profile={profile} onUpdateProfile={setProfile} />
+              <ProfileEdit profile={profile} onUpdateProfile={setProfile} onLogout={handleLogout} />
             </motion.div>
           )}
         </AnimatePresence>

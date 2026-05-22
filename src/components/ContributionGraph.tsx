@@ -247,7 +247,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
   };
 
   return (
-    <div className="flex flex-col gap-6 p-8 bg-[#0F1317] rounded-[2.2rem] border border-zinc-500/80 backdrop-blur-sm relative">
+    <div className="flex flex-col gap-6 p-8 bg-[#0F1317] rounded-[2.2rem] border border-zinc-500/50 backdrop-blur-sm relative z-20">
       
       {/* Detail Dialog Popup Wrapper */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
@@ -423,7 +423,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
       </Dialog>
       
       {/* Grid Display Calendar */}
-      <div className="relative overflow-x-auto pb-4 pt-10 scrollbar-hide">
+      <div className="relative overflow-x-auto md:overflow-visible pb-4 pt-10 scrollbar-hide z-30">
         <div className="min-w-max">
           {/* Month Labels */}
           <div className="relative h-6 mb-2">
@@ -462,7 +462,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
                         selectedDateStr === dateStr && "ring-1 ring-emerald-400"
                       )}
                     >
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-zinc-950 text-[10px] font-mono text-zinc-200 rounded-xl border border-zinc-500 opacity-0 group-hover:opacity-100 pointer-events-none transition-all scale-75 group-hover:scale-100 whitespace-nowrap z-[100] shadow-2xl">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-zinc-950 text-[10px] font-mono text-zinc-200 rounded-xl border border-zinc-500 opacity-0 group-hover:opacity-100 pointer-events-none transition-all scale-75 group-hover:scale-100 whitespace-nowrap z-[9999] shadow-2xl">
                         <div className="flex flex-col gap-1">
                           <span className="text-emerald-500 font-bold border-b border-zinc-500 pb-1 mb-1">{format(day, 'EEEE, MMM d')}</span>
                           <span>{logCount} {logCount === 1 ? 'contribution' : 'contributions'}</span>

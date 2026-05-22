@@ -141,7 +141,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="max-h-[60vh] overflow-y-auto pr-3 space-y-6 scrollbar-thin scrollbar-thumb-zinc-800/50 scrollbar-track-transparent">
+        <div className="max-h-[60vh] overflow-y-auto pr-3 space-y-6 scrollbar-thin scrollbar-thumb-zinc-805/50 scrollbar-track-transparent">
           
           {/* STEP 1: Metadata inputs */}
           {step === 1 && (
@@ -281,7 +281,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                   className={`border border-dashed rounded-xl py-3 px-4 text-center cursor-pointer transition-all ${
                     isDragging 
                       ? 'border-emerald-500 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
-                      : 'border-zinc-500 bg-zinc-900/10 hover:border-zinc-700 hover:bg-zinc-900/20'
+                      : 'border-zinc-500 bg-zinc-900/10 hover:border-zinc-300 hover:bg-zinc-900/20'
                   }`}
                 >
                   <input
