@@ -11,7 +11,7 @@ import { FollowingSection } from './components/FollowingSection';
 import { WorkLog, analyzeProductivity, ProductivityAnalysis } from './lib/gemini';
 import { format, parseISO } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
-import { Brain, Sparkles, Plus, FolderOpen, Briefcase, Paperclip, Flame, Calendar } from 'lucide-react';
+import { Brain, Sparkles, Plus, FolderOpen, Briefcase, Paperclip, Flame, Calendar, Filter, Folder, Layers } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
@@ -29,6 +29,7 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [addFormStep, setAddFormStep] = useState(1);
   const [editingLogStep, setEditingLogStep] = useState(1);
+  const [selectedHistoryCategory, setSelectedHistoryCategory] = useState<string | null>(null);
 
   const handleAuthSuccess = (profileData: any) => {
     setProfile(profileData);
@@ -141,6 +142,10 @@ export default function App() {
     setEditingLog(null);
   };
 
+  const handleDeleteLog = (id: string) => {
+    setLogs(prev => prev.filter(log => log.id !== id));
+  };
+
   const handleAnalyze = async () => {
     setLoadingAnalysis(true);
     try {
@@ -153,7 +158,43 @@ export default function App() {
     }
   };
 
-  const existingRepos = Array.from(new Set(logs.filter(l => l.metadata?.repo).map(l => l.metadata!.repo!)));
+  const existingRepos = useMemo(() => {
+    const catTitles = logs.filter(l => l.category === 'code').map(l => l.title);
+    const repoMetadata = logs.filter(l => l.metadata?.repo).map(l => l.metadata!.repo!);
+    return Array.from(new Set([...catTitles, ...repoMetadata])).filter(Boolean);
+  }, [logs]);
+
+  const calculateHighestStreak = (logsList: WorkLog[]): number => {
+    if (logsList.length === 0) return 0;
+    const activeDates = Array.from(new Set(logsList.map(l => l.dateStr).filter(Boolean)));
+    activeDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+    let maxStreak = 0;
+    let currentStreak = 0;
+    let prevDate: Date | null = null;
+    for (const dateStr of activeDates) {
+      const currentDate = new Date(dateStr);
+      if (!prevDate) {
+        currentStreak = 1;
+      } else {
+        const diffTime = Math.abs(currentDate.getTime() - prevDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) {
+          currentStreak += 1;
+        } else if (diffDays > 1) {
+          if (currentStreak > maxStreak) {
+            maxStreak = currentStreak;
+          }
+          currentStreak = 1;
+        }
+      }
+      prevDate = currentDate;
+    }
+    if (currentStreak > maxStreak) {
+      maxStreak = currentStreak;
+    }
+    return maxStreak;
+  };
+
   const streak = analysis?.streakInfo?.currentStreak || 0;
   const todayDateStr = new Date().toISOString().split('T')[0];
   const hasLoggedToday = logs.some(l => l.dateStr === todayDateStr);
@@ -163,9 +204,13 @@ export default function App() {
     const curYear = now.getFullYear();
     const curMonth = now.getMonth();
     
-    const totalLogs = logs.length;
+    const logsToAnalyze = selectedHistoryCategory 
+      ? logs.filter(l => l.metadata?.repo === selectedHistoryCategory || (l.category === 'code' && l.title === selectedHistoryCategory))
+      : logs;
     
-    const thisMonthLogs = logs.filter(log => {
+    const totalLogs = logsToAnalyze.length;
+    
+    const thisMonthLogs = logsToAnalyze.filter(log => {
       try {
         const d = parseISO(log.dateStr);
         return d.getFullYear() === curYear && d.getMonth() === curMonth;
@@ -180,7 +225,7 @@ export default function App() {
     const monthsToCount = curMonth + 1;
     for (let m = 0; m <= curMonth; m++) {
       const totalDaysInMonth = new Date(curYear, m + 1, 0).getDate();
-      const logsInMonth = logs.filter(log => {
+      const logsInMonth = logsToAnalyze.filter(log => {
         try {
           const d = parseISO(log.dateStr);
           return d.getFullYear() === curYear && d.getMonth() === m;
@@ -195,13 +240,23 @@ export default function App() {
     const percentage = monthsToCount > 0 ? (totalMonthlyRatios * 100) / monthsToCount : 0;
     const consistencyPercentage = percentage.toFixed(1);
 
+    const dynamicHighest = calculateHighestStreak(logsToAnalyze);
+    const highestStreak = selectedHistoryCategory 
+      ? dynamicHighest.toString() 
+      : Math.max(dynamicHighest, Number(profile.highestStreak || '92')).toString();
+
     return {
       totalLogs,
       loggedDaysThisMonth,
       consistencyPercentage,
-      highestStreak: profile.highestStreak || '92'
+      highestStreak
     };
-  }, [logs, profile]);
+  }, [logs, profile, selectedHistoryCategory]);
+
+  const filteredHistoryLogs = useMemo(() => {
+    if (!selectedHistoryCategory) return logs;
+    return logs.filter(l => l.metadata?.repo === selectedHistoryCategory || (l.category === 'code' && l.title === selectedHistoryCategory));
+  }, [logs, selectedHistoryCategory]);
 
   // Sorting priorities HIGH -> MID -> LOW (None is excluded as per prompt request)
   const priorityWeights = {
@@ -267,73 +322,50 @@ export default function App() {
                       )}
                     </div>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                      <Dialog open={isLogModalOpen} onOpenChange={(open) => {
-                        setIsLogModalOpen(open);
-                        if (open) {
-                          setModalStep('select');
-                          setAddFormStep(1);
-                        }
-                      }}>
-                        <DialogTrigger render={<Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-10 py-7 rounded-2xl transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] text-base whitespace-nowrap" />}>
-                          <Plus className="w-5 h-5 mr-2" />
-                          Add Activity
-                        </DialogTrigger>
-                      <DialogContent className={`bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
-                        modalStep === 'select' ? 'sm:max-w-[650px]' : addFormStep === 1 ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
-                      }`}>
-                        <DialogHeader className="p-8 pb-0 flex-shrink-0">
-                          <DialogTitle className="text-2xl font-bold tracking-tight text-white">
-                            {modalStep === 'select' ? 'What are we logging?' : selectedMode === 'repo' ? 'New Category' : 'New Activity'}
-                          </DialogTitle>
-                        </DialogHeader>
-                        
-                        <div className={`p-8 ${modalStep !== 'select' && addFormStep === 2 ? 'overflow-y-auto flex-1 max-h-[calc(95vh-120px)] md:max-h-[calc(92vh-120px)] pr-6' : ''}`}>
-                          {modalStep === 'select' ? (
-                            <div className="grid grid-cols-2 gap-4">
-                              <button
-                                onClick={() => {
-                                  setSelectedMode('repo');
-                                  setModalStep('form');
-                                }}
-                                className="group flex flex-col items-center justify-center gap-4 p-8 rounded-3xl border-2 border-zinc-900 bg-zinc-900/30 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300"
-                              >
-                                <div className="w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-500 group-hover:border-emerald-500/50 transition-colors">
-                                  <FolderOpen className="w-8 h-8 text-emerald-500" />
-                                </div>
-                                <div className="text-center">
-                                  <span className="block text-lg font-bold text-white mb-1">New Category</span>
-                                  <span className="text-xs text-zinc-500">Log a new codebase or category</span>
-                                </div>
-                              </button>
-                              
-                              <button
-                                onClick={() => {
-                                  setSelectedMode('activity');
-                                  setModalStep('form');
-                                }}
-                                className="group flex flex-col items-center justify-center gap-4 p-8 rounded-3xl border-2 border-zinc-900 bg-zinc-900/30 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300"
-                              >
-                                <div className="w-16 h-16 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-500 group-hover:border-emerald-500/50 transition-colors">
-                                  <Briefcase className="w-8 h-8 text-emerald-500" />
-                                </div>
-                                <div className="text-center">
-                                  <span className="block text-lg font-bold text-white mb-1">New Activity</span>
-                                  <span className="text-xs text-zinc-500">Log a task, note, or priorities</span>
-                                </div>
-                              </button>
-                            </div>
-                          ) : (
+                      <Button
+                        onClick={() => {
+                          setSelectedMode('repo');
+                          setModalStep('form');
+                          setIsLogModalOpen(true);
+                        }}
+                        className="bg-zinc-900 hover:bg-zinc-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/60 font-bold px-6 py-7 rounded-2xl transition-all text-base whitespace-nowrap cursor-pointer flex items-center gap-2"
+                      >
+                        <FolderOpen className="w-5 h-5" />
+                        + Add Category
+                      </Button>
+
+                      <Button
+                        onClick={() => {
+                          setSelectedMode('activity');
+                          setModalStep('form');
+                          setIsLogModalOpen(true);
+                        }}
+                        className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-8 py-7 rounded-2xl transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] text-base whitespace-nowrap cursor-pointer flex items-center gap-2"
+                      >
+                        <Plus className="w-5 h-5" />
+                        + Add Activity
+                      </Button>
+
+                      <Dialog open={isLogModalOpen} onOpenChange={setIsLogModalOpen}>
+                        <DialogContent className={`bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
+                          selectedMode === 'repo' ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
+                        }`}>
+                          <DialogHeader className="p-8 pb-0 flex-shrink-0">
+                            <DialogTitle className="text-2xl font-bold tracking-tight text-white">
+                              {selectedMode === 'repo' ? 'New Category' : 'New Activity'}
+                            </DialogTitle>
+                          </DialogHeader>
+                          
+                          <div className={`p-8 ${selectedMode === 'activity' ? 'overflow-y-auto flex-1 max-h-[calc(95vh-120px)] md:max-h-[calc(92vh-120px)] pr-6' : ''}`}>
                             <LogForm 
                               onAdd={handleAddLog} 
                               onSuccess={() => setIsLogModalOpen(false)} 
                               mode={selectedMode}
                               existingRepos={existingRepos}
-                              onStepChange={setAddFormStep}
                             />
-                          )}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </div>
                 </section>
@@ -495,7 +527,7 @@ export default function App() {
                 <h2 className="text-2xl font-black text-white">Category</h2>
                 <span className="text-sm text-zinc-500">{logs.filter(l => l.category === 'code').length} category logs found</span>
               </div>
-              <LogList logs={logs.filter(l => l.category === 'code')} onEdit={setEditingLog} />
+              <LogList logs={logs.filter(l => l.category === 'code')} onEdit={setEditingLog} onDelete={handleDeleteLog} />
             </motion.div>
           )}
 
@@ -511,7 +543,7 @@ export default function App() {
                 <h2 className="text-2xl font-black text-white">Activity</h2>
                 <span className="text-sm text-zinc-500">{logs.filter(l => l.category !== 'code').length} activity logs found</span>
               </div>
-              <LogList logs={logs.filter(l => l.category !== 'code')} onEdit={setEditingLog} />
+              <LogList logs={logs.filter(l => l.category !== 'code')} onEdit={setEditingLog} onDelete={handleDeleteLog} />
             </motion.div>
           )}
 
@@ -524,9 +556,59 @@ export default function App() {
               className="max-w-4xl mx-auto space-y-8"
             >
               <div>
-                <h2 className="text-2xl font-black text-white mb-8">History</h2>
+                <h2 className="text-2xl font-black text-white mb-6">History</h2>
+                
+                {/* Visual Category Filter Toolbar */}
+                <div className="bg-[#0F1317]/50 border border-zinc-500/20 p-5 rounded-3xl mb-6 shadow-xl animate-in fade-in duration-300">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4 text-emerald-400" />
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">
+                          Filter Calendar & Metrics
+                        </span>
+                      </div>
+                      <p className="text-[11px] font-medium text-zinc-500">
+                        Isolating database logs and streak calculations to a specific category
+                      </p>
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => setSelectedHistoryCategory(null)}
+                        className={`inline-flex items-center px-4 py-2.5 rounded-2xl text-xs font-bold tracking-wide transition-all duration-200 cursor-pointer ${
+                          selectedHistoryCategory === null
+                            ? 'bg-emerald-500 text-black font-extrabold shadow-[0_8px_20px_-6px_rgba(16,185,129,0.4)]'
+                            : 'bg-zinc-950 border border-zinc-500/20 text-zinc-400 hover:text-white hover:border-zinc-500/40'
+                        }`}
+                      >
+                        <Layers className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                        All Categories
+                      </button>
+                      
+                      {existingRepos.map((cat) => {
+                        const isSelected = selectedHistoryCategory === cat;
+                        return (
+                          <button
+                            key={cat}
+                            onClick={() => setSelectedHistoryCategory(cat)}
+                            className={`inline-flex items-center px-4 py-2.5 rounded-2xl text-xs font-bold tracking-wide transition-all duration-200 cursor-pointer ${
+                              isSelected
+                                ? 'bg-emerald-500 text-black font-extrabold shadow-[0_8px_20px_-6px_rgba(16,185,129,0.4)]'
+                                : 'bg-zinc-950 border border-zinc-500/20 text-emerald-400/95 font-extrabold hover:text-emerald-300 hover:border-emerald-500/40'
+                            }`}
+                          >
+                            <Folder className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                            {cat}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
                 <div className="bg-[#0F1317] p-8 rounded-3xl border border-zinc-500/50">
-                  <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
+                  <ContributionGraph logs={filteredHistoryLogs} highestStreak={contributionMetrics.highestStreak} />
                 </div>
               </div>
 
@@ -624,7 +706,7 @@ export default function App() {
            {editingLog && (
              <Dialog open={!!editingLog} onOpenChange={(open) => { if (!open) setEditingLog(null); }}>
                <DialogContent className={`bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
-                 editingLogStep === 1 ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
+                 editingLog.category === 'code' ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
                }`}>
                  <DialogHeader className="p-8 pb-0 flex-shrink-0">
                    <DialogTitle className="text-2xl font-bold tracking-tight text-white flex justify-between items-center pr-4">
@@ -632,7 +714,7 @@ export default function App() {
                      <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest font-mono bg-emerald-500/10 px-2.5 py-1 border border-emerald-500/20 rounded-full">EDITING MODE</span>
                    </DialogTitle>
                  </DialogHeader>
-                 <div className={`p-8 pb-6 ${editingLogStep === 2 ? 'overflow-y-auto flex-1 max-h-[calc(95vh-120px)] md:max-h-[calc(92vh-120px)] pr-6' : ''}`}>
+                 <div className={`p-8 pb-6 ${editingLog.category !== 'code' ? 'overflow-y-auto flex-1 max-h-[calc(95vh-120px)] md:max-h-[calc(92vh-120px)] pr-6' : ''}`}>
                    <LogForm 
                      onAdd={(updatedFields) => {
                        handleUpdateLog(editingLog.id, updatedFields);
@@ -641,7 +723,7 @@ export default function App() {
                      mode={editingLog.category === 'code' ? 'repo' : 'activity'}
                      existingRepos={existingRepos}
                      initialData={editingLog}
-                     onStepChange={setEditingLogStep}
+                     
                    />
                  </div>
                </DialogContent>

@@ -2,12 +2,13 @@ import React from 'react';
 import { WorkLog } from '../lib/gemini';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { Code, FileText, BookOpen, MoreHorizontal, Clock, Github, Folder, Paperclip, Download, Edit2 } from 'lucide-react';
+import { Code, FileText, BookOpen, MoreHorizontal, Clock, Github, Folder, Paperclip, Download, Edit2, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 interface LogListProps {
   logs: WorkLog[];
   onEdit?: (log: WorkLog) => void;
+  onDelete?: (id: string) => void;
 }
 
 const iconMap = {
@@ -17,7 +18,7 @@ const iconMap = {
   other: MoreHorizontal,
 };
 
-export function LogList({ logs, onEdit }: LogListProps) {
+export function LogList({ logs, onEdit, onDelete }: LogListProps) {
   const sortedLogs = [...logs].sort((a, b) => b.timestamp - a.timestamp);
 
   const handleSimulatedDownload = (fileName: string) => {
@@ -95,6 +96,20 @@ export function LogList({ logs, onEdit }: LogListProps) {
                     title="Edit Activity"
                   >
                     <Edit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  </button>
+                )}
+
+                {onDelete && (
+                  <button
+                    onClick={() => {
+                      if (confirm("Are you sure you want to delete this?")) {
+                        onDelete(log.id);
+                      }
+                    }}
+                    className="p-1.5 sm:p-2 bg-zinc-950 border border-red-500/40 text-red-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                    title="Delete Item"
+                  >
+                    <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </button>
                 )}
               </div>

@@ -203,7 +203,7 @@ export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditP
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-6 border-t border-zinc-500/40">
+          <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between pt-6 border-t border-zinc-500/40">
             {savedMessage ? (
               <span className="flex items-center gap-1.5 text-emerald-500 font-bold text-sm animate-bounce">
                 <Check className="w-4 h-4" /> Profile updated successfully!
@@ -211,19 +211,19 @@ export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditP
             ) : (
               <span className="text-xs text-zinc-500 font-semibold">Changes are instantly persistent.</span>
             )}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
               {onLogout && (
                 <Button
                   type="button"
                   onClick={onLogout}
-                  className="bg-transparent hover:bg-red-500/10 border border-red-500/40 text-red-400 hover:text-red-300 font-bold rounded-2xl px-6 h-13 transition-all select-none"
+                  className="bg-transparent hover:bg-red-500/10 border border-red-500/40 text-red-400 hover:text-red-300 font-bold rounded-2xl px-6 h-13 transition-all select-none w-full sm:w-auto cursor-pointer"
                 >
                   Sign Out
                 </Button>
               )}
               <Button
                 type="submit"
-                className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-2xl px-10 h-13 transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] select-none"
+                className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-2xl px-10 h-13 transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] select-none w-full sm:w-auto cursor-pointer"
               >
                 Commit Changes
               </Button>
