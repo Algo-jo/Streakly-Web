@@ -155,6 +155,8 @@ export default function App() {
 
   const existingRepos = Array.from(new Set(logs.filter(l => l.metadata?.repo).map(l => l.metadata!.repo!)));
   const streak = analysis?.streakInfo?.currentStreak || 0;
+  const todayDateStr = new Date().toISOString().split('T')[0];
+  const hasLoggedToday = logs.some(l => l.dateStr === todayDateStr);
 
   const contributionMetrics = useMemo(() => {
     const now = new Date();
@@ -247,21 +249,35 @@ export default function App() {
                 <section className="space-y-8">
                   <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-8 bg-[#0F1317] rounded-3xl border border-zinc-500/50">
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <h3 className="text-2xl font-bold text-white tracking-tight">You are on {streak} Days Streak</h3>
-                      <p className="text-sm text-zinc-400 font-medium">Consistency is the key to mastery. Keep it up!</p>
+                      {!hasLoggedToday ? (
+                        <p className="text-sm font-bold text-yellow-500 flex items-center gap-2 animate-pulse">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
+                          </span>
+                          You haven't logged an activity today
+                        </p>
+                      ) : (
+                        <p className="text-sm text-emerald-400 font-semibold flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                          You have logged an activity today!
+                        </p>
+                      )}
                     </div>
-                    <Dialog open={isLogModalOpen} onOpenChange={(open) => {
-                      setIsLogModalOpen(open);
-                      if (open) {
-                        setModalStep('select');
-                        setAddFormStep(1);
-                      }
-                    }}>
-                      <DialogTrigger render={<Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-10 py-7 rounded-2xl transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] text-base" />}>
-                        <Plus className="w-5 h-5 mr-2" />
-                        Add Activity
-                      </DialogTrigger>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                      <Dialog open={isLogModalOpen} onOpenChange={(open) => {
+                        setIsLogModalOpen(open);
+                        if (open) {
+                          setModalStep('select');
+                          setAddFormStep(1);
+                        }
+                      }}>
+                        <DialogTrigger render={<Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-10 py-7 rounded-2xl transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] text-base whitespace-nowrap" />}>
+                          <Plus className="w-5 h-5 mr-2" />
+                          Add Activity
+                        </DialogTrigger>
                       <DialogContent className={`bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
                         modalStep === 'select' ? 'sm:max-w-[650px]' : addFormStep === 1 ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
                       }`}>
@@ -318,6 +334,7 @@ export default function App() {
                         </div>
                       </DialogContent>
                     </Dialog>
+                    </div>
                   </div>
                 </section>
 
