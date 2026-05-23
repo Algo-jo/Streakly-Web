@@ -90,7 +90,6 @@ const AVATAR_ICONS: Record<string, any> = {
 
 export function FollowingSection() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [subTab, setSubTab] = useState<'followed' | 'discover'>('followed');
   
   const [followedIds, setFollowedIds] = useState<string[]>(() => {
@@ -101,13 +100,6 @@ export function FollowingSection() {
   useEffect(() => {
     localStorage.setItem('streakly_followed_ids', JSON.stringify(followedIds));
   }, [followedIds]);
-
-  // Extract all unique tags
-  const allTags = useMemo(() => {
-    const tagsSet = new Set<string>();
-    DEFAULT_DEVS.forEach(dev => dev.tags.forEach(t => tagsSet.add(t)));
-    return Array.from(tagsSet);
-  }, []);
 
   const handleFollowToggle = (id: string) => {
     setFollowedIds(prev => {
@@ -124,14 +116,13 @@ export function FollowingSection() {
     return DEFAULT_DEVS.filter(dev => {
       const matchesSearch = dev.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             dev.role.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesTag = selectedTag ? dev.tags.includes(selectedTag) : true;
       
       const isCurrentlyFollowed = followedIds.includes(dev.id);
       const matchesTab = subTab === 'followed' ? isCurrentlyFollowed : !isCurrentlyFollowed;
 
-      return matchesSearch && matchesTag && matchesTab;
+      return matchesSearch && matchesTab;
     });
-  }, [searchTerm, selectedTag, subTab, followedIds]);
+  }, [searchTerm, subTab, followedIds]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -146,12 +137,6 @@ export function FollowingSection() {
             <p className="text-xs text-zinc-400 font-semibold leading-relaxed">
               Find, follow and observe developer metrics from across the global community.
             </p>
-          </div>
-
-          {/* Quick numbers indicator */}
-          <div className="flex gap-4 items-center bg-zinc-950/60 p-3 rounded-2xl border border-zinc-950 self-start md:self-auto shrink-0">
-            <span className="text-xs text-zinc-400 font-bold tracking-tight">Active Peer Syncs:</span>
-            <span className="text-sm text-emerald-400 font-black font-mono">{followedIds.length} connected</span>
           </div>
         </div>
 
@@ -189,45 +174,14 @@ export function FollowingSection() {
             className="bg-zinc-950 border-zinc-500 focus:border-emerald-500/50 pl-12 h-14 rounded-2xl text-sm font-semibold text-white focus:ring-emerald-500"
           />
         </div>
-
-        {/* Filter Badges Row */}
-        <div className="space-y-2">
-          <label className="text-[9px] font-black text-zinc-500 tracking-widest block uppercase">FILTER BY SPECIALTY</label>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedTag(null)}
-              className={`px-4 py-1.5 rounded-full text-xs font-black transition-all ${
-                selectedTag === null
-                  ? 'bg-emerald-500 text-black border-emerald-400 font-extrabold'
-                  : 'bg-zinc-950 border border-zinc-500 text-zinc-400 hover:bg-zinc-900 hover:text-white'
-              }`}
-            >
-              ALL SPECIALTIES
-            </button>
-            {allTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => setSelectedTag(tag)}
-                className={`px-4 py-1.5 rounded-full text-xs font-black transition-all uppercase ${
-                  selectedTag === tag
-                    ? 'bg-emerald-500 text-black font-extrabold'
-                    : 'bg-zinc-950 border border-zinc-500 text-zinc-400 hover:text-white'
-                }`}
-              >
-                #{tag}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Simplified, Clean Peer Grid (Nama, Jabatan, Follower, Streak) */}
       <div className="space-y-4">
         <div className="flex items-center justify-between px-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
           <span>
-            {subTab === 'followed' ? 'YOUR IMMERSIVE FEED' : 'DISCOVER PUBLIC PROFILES'} ({displayedDevs.length})
+            {subTab === 'followed' ? 'YOUR FEED' : 'DISCOVER PUBLIC PROFILES'} ({displayedDevs.length})
           </span>
-          <span>Stamina & Sync Button</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -295,7 +249,7 @@ export function FollowingSection() {
               <p className="text-sm font-semibold text-zinc-400 leading-relaxed">
                 {subTab === 'followed' 
                   ? "Your following feed is currently empty. You aren't following anyone yet!" 
-                  : "No public profiles matched your specialty filters. Try adjusting your query!"}
+                  : "No public profiles matched your search query. Try adjusting your search term!"}
               </p>
               {subTab === 'followed' && (
                 <button
