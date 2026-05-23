@@ -136,8 +136,8 @@ export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditP
                 <span className="text-[8px] font-black tracking-tighter text-zinc-500 uppercase">Followers</span>
               </div>
               <div>
-                <span className="block text-white font-black text-sm">{highestStreak || '56'}</span>
-                <span className="text-[8px] font-black tracking-tighter text-zinc-500 uppercase select-none">Highest Streak</span>
+                <span className="block text-yellow-500 font-black text-sm">{highestStreak || '56'}</span>
+                <span className="text-[8px] font-black tracking-tighter text-yellow-500/80 uppercase select-none">Highest Streak</span>
               </div>
               <div>
                 <span className="block text-white font-black text-sm">{followingCount || '340'}</span>
@@ -191,91 +191,49 @@ export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditP
             />
           </div>
 
-          {/* Add Profile Picture Drag & Drop area or URL input */}
+          {/* Add Profile Picture Drag & Drop area */}
           <div className="space-y-3">
             <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Profile Picture</label>
             
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              {/* Image upload area */}
-              <div 
-                className={`md:col-span-7 border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-2 transition-all ${
-                  dragActive 
-                    ? 'border-emerald-500 bg-emerald-500/5' 
-                    : 'border-zinc-500 bg-zinc-950 hover:border-zinc-400'
-                }`}
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-              >
-                <div className="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-emerald-400 border border-zinc-500">
-                  <Upload className="w-5 h-5" />
-                </div>
-                <div className="text-center">
-                  <label className="cursor-pointer text-xs text-white font-extrabold hover:text-emerald-400 transition-colors">
-                    Click to upload photo
-                    <input 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/*" 
-                      onChange={handleFileChange} 
-                    />
-                  </label>
-                  <p className="text-[10px] text-zinc-500 mt-1">or drag & drop your image here</p>
-                </div>
+            {/* Image upload area */}
+            <div 
+              className={`w-full border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center gap-1.5 transition-all ${
+                dragActive 
+                  ? 'border-emerald-500 bg-emerald-500/5' 
+                  : 'border-zinc-500 bg-zinc-950 hover:border-zinc-400'
+              }`}
+              onDragEnter={handleDrag}
+              onDragOver={handleDrag}
+              onDragLeave={handleDrag}
+              onDrop={handleDrop}
+            >
+              <div className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-emerald-400 border border-zinc-500">
+                <Upload className="w-4 h-4" />
               </div>
-
-              {/* URL Input area */}
-              <div className="md:col-span-5 bg-zinc-950/40 border border-zinc-500/50 rounded-2xl p-5 flex flex-col justify-between gap-3">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5 matchesText">
-                    <LinkIcon className="w-3 h-3 text-zinc-500" /> Specify Photo Link URL
-                  </span>
-                  <p className="text-[9px] text-zinc-500">Or paste an Unsplash / GitHub avatar web address directly.</p>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Input
-                    value={avatarUrl.startsWith('data:') ? '' : avatarUrl}
-                    onChange={(e) => setAvatarUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/..."
-                    className="bg-zinc-950 border-zinc-500 h-9 text-xs focus:ring-emerald-500/50 rounded-xl px-3 text-white flex-1"
+              <div className="text-center">
+                <label className="cursor-pointer text-xs text-white font-extrabold hover:text-emerald-400 transition-colors">
+                  Click to upload photo
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={handleFileChange} 
                   />
-                  {avatarUrl && (
-                    <Button 
-                      type="button"
-                      onClick={() => setAvatarUrl('')}
-                      className="bg-zinc-900 border border-zinc-500 hover:bg-zinc-800 h-9 w-9 p-0 rounded-xl"
-                    >
-                      <X className="w-3.5 h-3.5 text-zinc-400" />
-                    </Button>
-                  )}
-                </div>
+                </label>
+                <p className="text-[10px] text-zinc-500 mt-0.5">or drag & drop here</p>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">GitHub Username</label>
-              <div className="relative">
-                <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                <Input
-                  value={github}
-                  onChange={(e) => setGithub(e.target.value)}
-                  placeholder="github-username"
-                  className="bg-zinc-950 border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono text-white"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Tech Stack Tags</label>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">GitHub Username</label>
+            <div className="relative">
+              <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <Input
-                value={techStack}
-                onChange={(e) => setTechStack(e.target.value)}
-                placeholder="React, TypeScript, Rust"
-                className="bg-zinc-950 border-zinc-500 h-12 text-sm font-bold focus:ring-emerald-500/50 rounded-2xl px-5 text-white"
+                value={github}
+                onChange={(e) => setGithub(e.target.value)}
+                placeholder="github-username"
+                className="bg-zinc-950 border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono text-white"
               />
             </div>
           </div>

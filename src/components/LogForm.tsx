@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Github, Folder, Tag, Plus, Paperclip, ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { Github, Folder, Plus, Paperclip, ChevronRight, ChevronLeft, Check } from 'lucide-react';
 
 interface LogFormProps {
   onAdd: (log: { 
@@ -93,7 +93,10 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !content) return;
+    if (!title) return;
+    
+    const finalContent = mode === 'repo' ? (content || `Repository ${title} created.`) : content;
+    if (mode !== 'repo' && !finalContent) return;
     
     const metadata = {
       repo: (mode === 'repo' || repo) ? repo : undefined,
@@ -104,7 +107,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
 
     onAdd({ 
       title, 
-      content, 
+      content: finalContent, 
       category, 
       priority,
       files,
@@ -126,25 +129,27 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
 
   return (
     <div className="bg-zinc-950 p-2">
-      <div className="flex items-center justify-between mb-6 px-1">
-        <div className="flex items-center gap-2">
-          <span className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-xs ${step === 1 ? 'bg-emerald-500 text-black' : 'bg-emerald-950 text-emerald-400'}`}>1</span>
-          <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase">Specifications</span>
+      {mode !== 'repo' && (
+        <div className="flex items-center justify-between mb-6 px-1">
+          <div className="flex items-center gap-2">
+            <span className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-xs ${step === 1 ? 'bg-emerald-500 text-black' : 'bg-emerald-950 text-emerald-400'}`}>1</span>
+            <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase">Specifications</span>
+          </div>
+          <div className="h-[2px] bg-zinc-800 flex-1 mx-4">
+            <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: step === 2 ? '100%' : '0%' }}></div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-xs ${step === 2 ? 'bg-emerald-500 text-black' : 'bg-zinc-900 text-zinc-500'}`}>2</span>
+            <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase font-sans">Attachments & Content</span>
+          </div>
         </div>
-        <div className="h-[2px] bg-zinc-800 flex-1 mx-4">
-          <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: step === 2 ? '100%' : '0%' }}></div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-xs ${step === 2 ? 'bg-emerald-500 text-black' : 'bg-zinc-900 text-zinc-500'}`}>2</span>
-          <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase font-sans">Attachments & Content</span>
-        </div>
-      </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="max-h-[60vh] overflow-y-auto pr-3 space-y-6 scrollbar-thin scrollbar-thumb-zinc-805/50 scrollbar-track-transparent">
           
           {/* STEP 1: Metadata inputs */}
-          {step === 1 && (
+          {(mode === 'repo' || step === 1) && (
             <div className="space-y-5 animate-in fade-in slide-in-from-left-4 duration-300">
               {/* Title column */}
               <div className="space-y-2">
@@ -160,48 +165,8 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                 />
               </div>
 
-              {/* Quick Description (specific for activities) */}
-              {mode === 'activity' && (
-                <div className="space-y-2 animate-in fade-in duration-300">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">ACTIVITY QUICK DESC</label>
-                  <Input
-                    placeholder="A brief summary of this activity..."
-                    value={quickDesc}
-                    onChange={(e) => setQuickDesc(e.target.value)}
-                    className="bg-zinc-900/50 border-zinc-500 h-12 text-sm font-medium focus:ring-emerald-500/50 rounded-2xl px-6"
-                  />
-                </div>
-              )}
-
               {/* Repository Links */}
-              {mode === 'repo' ? (
-                <div className="grid grid-cols-2 gap-4 animate-in fade-in duration-300">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">REPOSITORY ID</label>
-                    <div className="relative">
-                      <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                      <Input
-                        placeholder="owner/repo"
-                        value={repo}
-                        onChange={(e) => setRepo(e.target.value)}
-                        className="bg-zinc-900/50 border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">PATH</label>
-                    <div className="relative">
-                      <Folder className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                      <Input
-                        placeholder="src/components"
-                        value={folder}
-                        onChange={(e) => setFolder(e.target.value)}
-                        className="bg-zinc-900/50 border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
+              {mode !== 'repo' && (
                 <div className="space-y-2 animate-in fade-in duration-300">
                   <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">SELECT REPOSITORY</label>
                   <div className="relative">
@@ -224,50 +189,38 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
               )}
 
               {/* Priority selection row */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">ACTIVITY PRIORITY</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {(['NONE', 'LOW', 'MID', 'HIGH'] as const).map((p) => {
-                    const isSelected = priority === p;
-                    return (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => setPriority(p)}
-                        className={`h-11 rounded-xl border text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
-                          isSelected 
-                            ? p === 'NONE' ? 'bg-zinc-800 text-white border-zinc-500' :
-                              p === 'LOW' ? 'bg-blue-500/10 text-blue-300 border-blue-500/50' :
-                              p === 'MID' ? 'bg-amber-500/10 text-amber-300 border-amber-500/50' :
-                              'bg-red-500/10 text-red-300 border-red-500/50'
-                            : 'bg-zinc-900/30 text-zinc-400 hover:bg-zinc-900 border-zinc-500'
-                        }`}
-                      >
-                        {p}
-                      </button>
-                    );
-                  })}
+              {mode !== 'repo' && (
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">ACTIVITY PRIORITY</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {(['NONE', 'LOW', 'MID', 'HIGH'] as const).map((p) => {
+                      const isSelected = priority === p;
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => setPriority(p)}
+                          className={`h-11 rounded-xl border text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
+                            isSelected 
+                              ? p === 'NONE' ? 'bg-zinc-800 text-white border-zinc-500' :
+                                p === 'LOW' ? 'bg-blue-500/10 text-blue-300 border-blue-500/50' :
+                                p === 'MID' ? 'bg-amber-500/10 text-amber-300 border-amber-500/50' :
+                                'bg-red-500/10 text-red-300 border-red-500/50'
+                              : 'bg-zinc-900/30 text-zinc-400 hover:bg-zinc-900 border-zinc-500'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-
-              {/* Tags */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">TAGS</label>
-                <div className="relative">
-                  <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                  <Input
-                    placeholder="ui, refactor, bugfix"
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                    className="bg-zinc-900/50 border-zinc-500 pl-11 h-12 rounded-2xl text-sm"
-                  />
-                </div>
-              </div>
+              )}
             </div>
           )}
 
           {/* STEP 2: Large text content & File uploads */}
-          {step === 2 && (
+          {mode !== 'repo' && step === 2 && (
             <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
               
               {/* Drag & Drop File Upload at the TOP of step 2 - Compact layout */}
@@ -333,11 +286,11 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
               {/* Activity main description - EXTREMELY SPACIOUS FULL SCREEN EDITOR */}
               <div className="space-y-2 pt-1">
                 <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                  {mode === 'repo' ? 'ACHIEVEMENTS / LOG DECK' : 'ACTIVITY CONTENT (MAIN DESCRIPTION)'} <span className="text-red-500">*</span>
+                  ACTIVITY CONTENT (MAIN DESCRIPTION) <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Textarea
-                    placeholder={mode === 'repo' ? "Document your repository progress here... (Use rich text / markdown if needed)" : "Work hard & document detail. State clearly your tasks, code snippets, or logs..."}
+                    placeholder="Work hard & document detail. State clearly your tasks, code snippets, or logs..."
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     className="bg-zinc-900/60 border-zinc-500 min-h-[350px] md:min-h-[420px] p-6 focus:ring-emerald-500/50 rounded-3xl resize-y text-zinc-100 leading-relaxed font-mono text-sm shadow-inner"
@@ -355,7 +308,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
 
         {/* Dynamic Nav Buttons - FIXED FROM OVERFLOWING TO THE RIGHT */}
         <div className="flex gap-4 pt-4 border-t border-zinc-900">
-          {step === 2 && (
+          {mode !== 'repo' && step === 2 && (
             <Button
               type="button"
               onClick={() => {
@@ -368,7 +321,15 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
             </Button>
           )}
 
-          {step === 1 ? (
+          {mode === 'repo' ? (
+            <Button 
+              type="submit" 
+              disabled={!title}
+              className="flex-1 h-14 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:hover:bg-emerald-500 disabled:cursor-not-allowed text-black font-extrabold text-base rounded-2xl transition-all flex items-center justify-center gap-2 shadow-[0_10px_25px_-10px_rgba(16,185,129,0.4)]"
+            >
+              <Check className="w-5 h-5" /> CREATE REPOSITORY
+            </Button>
+          ) : step === 1 ? (
             <Button
               type="button"
               disabled={!title}
@@ -389,8 +350,8 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
               className="flex-1 h-14 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:hover:bg-emerald-500 disabled:cursor-not-allowed text-black font-extrabold text-base rounded-2xl transition-all flex items-center justify-center gap-2 shadow-[0_10px_25px_-10px_rgba(16,185,129,0.4)]"
             >
               <Check className="w-5 h-5" /> {initialData 
-                ? (mode === 'repo' ? 'UPDATE REPOSITORY' : 'UPDATE ACCOMPLISHMENTS') 
-                : (mode === 'repo' ? 'COMMIT REPOSITORY' : 'SAVE SPECIFICATION')}
+                ? 'UPDATE ACCOMPLISHMENTS' 
+                : 'SAVE SPECIFICATION'}
             </Button>
           )}
         </div>

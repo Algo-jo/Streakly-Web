@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Navbar } from './components/Navbar';
 import { LogForm } from './components/LogForm';
 import { Auth } from './components/Auth';
@@ -9,9 +9,9 @@ import { Footer } from './components/Footer';
 import { ProfileEdit } from './components/ProfileEdit';
 import { FollowingSection } from './components/FollowingSection';
 import { WorkLog, analyzeProductivity, ProductivityAnalysis } from './lib/gemini';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
-import { Brain, Sparkles, Plus, FolderOpen, Briefcase, Paperclip } from 'lucide-react';
+import { Brain, Sparkles, Plus, FolderOpen, Briefcase, Paperclip, Flame, Calendar } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
@@ -156,6 +156,51 @@ export default function App() {
   const existingRepos = Array.from(new Set(logs.filter(l => l.metadata?.repo).map(l => l.metadata!.repo!)));
   const streak = analysis?.streakInfo?.currentStreak || 0;
 
+  const contributionMetrics = useMemo(() => {
+    const now = new Date();
+    const curYear = now.getFullYear();
+    const curMonth = now.getMonth();
+    
+    const totalLogs = logs.length;
+    
+    const thisMonthLogs = logs.filter(log => {
+      try {
+        const d = parseISO(log.dateStr);
+        return d.getFullYear() === curYear && d.getMonth() === curMonth;
+      } catch (e) {
+        const d = new Date(log.timestamp);
+        return d.getFullYear() === curYear && d.getMonth() === curMonth;
+      }
+    });
+    const loggedDaysThisMonth = new Set(thisMonthLogs.map(l => l.dateStr)).size;
+    
+    let totalMonthlyRatios = 0;
+    const monthsToCount = curMonth + 1;
+    for (let m = 0; m <= curMonth; m++) {
+      const totalDaysInMonth = new Date(curYear, m + 1, 0).getDate();
+      const logsInMonth = logs.filter(log => {
+        try {
+          const d = parseISO(log.dateStr);
+          return d.getFullYear() === curYear && d.getMonth() === m;
+        } catch (e) {
+          const d = new Date(log.timestamp);
+          return d.getFullYear() === curYear && d.getMonth() === m;
+        }
+      });
+      const loggedInMonthCount = new Set(logsInMonth.map(l => l.dateStr)).size;
+      totalMonthlyRatios += (loggedInMonthCount / totalDaysInMonth);
+    }
+    const percentage = monthsToCount > 0 ? (totalMonthlyRatios * 100) / monthsToCount : 0;
+    const consistencyPercentage = percentage.toFixed(1);
+
+    return {
+      totalLogs,
+      loggedDaysThisMonth,
+      consistencyPercentage,
+      highestStreak: profile.highestStreak || '92'
+    };
+  }, [logs, profile]);
+
   // Sorting priorities HIGH -> MID -> LOW (None is excluded as per prompt request)
   const priorityWeights = {
     HIGH: 3,
@@ -283,9 +328,6 @@ export default function App() {
                       <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">Activity Priority</h3>
                       <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Ranked HIGH to LOW</p>
                     </div>
-                    <span className="px-3 py-1 bg-red-500/10 text-red-400 text-[9px] font-black tracking-widest border border-red-500/20 rounded-full">
-                      FOCUS PANEL
-                    </span>
                   </div>
 
                   {prioritizedActivities.length === 0 ? (
@@ -353,24 +395,25 @@ export default function App() {
                 <section className="space-y-6">
                   <div className="flex items-center justify-between px-2">
                     <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">Recent Repository</h3>
-                    <button className="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition-colors">VIEW ALL</button>
+                    <button 
+                      onClick={() => setActiveTab('logs')}
+                      className="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition-colors cursor-pointer"
+                    >
+                      VIEW ALL
+                    </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {logs.filter(l => l.category === 'code').slice(0, 4).map((log) => (
                       <div key={log.id} className="p-6 bg-[#0F1317] rounded-3xl border border-zinc-500/50 hover:border-emerald-500/30 transition-all group cursor-pointer">
                         <div className="flex justify-between items-start mb-4">
                           <h4 className="text-emerald-500 font-bold text-sm tracking-tight">{log.title}</h4>
-                          <Plus className="w-4 h-4 text-zinc-500 group-hover:text-emerald-500 transition-colors rotate-45" />
                         </div>
                         <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">{log.content}</p>
                       </div>
                     ))}
                     {logs.filter(l => l.category === 'code').length === 0 && (
                       <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500/50 flex flex-col items-center text-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-zinc-500">
-                          <Plus className="w-6 h-6 text-zinc-500" />
-                        </div>
-                        <p className="text-zinc-400 text-sm font-medium">No repositories logged yet. Start by adding a code log!</p>
+                        <p className="text-zinc-400 text-sm font-medium">No repositoried made yet. start by making a new repository!</p>
                       </div>
                     )}
                   </div>
@@ -379,7 +422,12 @@ export default function App() {
                 <section className="space-y-6">
                   <div className="flex items-center justify-between px-2">
                     <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">Recent Activity</h3>
-                    <button className="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition-colors">VIEW ALL</button>
+                    <button 
+                      onClick={() => setActiveTab('projects')}
+                      className="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition-colors cursor-pointer"
+                    >
+                      VIEW ALL
+                    </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {logs.filter(l => l.category !== 'code').slice(0, 4).map((log) => (
@@ -397,9 +445,6 @@ export default function App() {
                     ))}
                     {logs.filter(l => l.category !== 'code').length === 0 && (
                       <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500/50 flex flex-col items-center text-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-zinc-500">
-                          <Plus className="w-6 h-6 text-zinc-500" />
-                        </div>
                         <p className="text-zinc-400 text-sm font-medium">No activities logged yet. Start by adding an activity!</p>
                       </div>
                     )}
@@ -416,21 +461,6 @@ export default function App() {
                   onEditClick={() => setActiveTab('profile')} 
                   onLogout={handleLogout}
                 />
-                
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between px-4">
-                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">AI Insights</h3>
-                    <Brain className="w-4 h-4 text-emerald-500" />
-                  </div>
-                  <LogList logs={logs.slice(0, 3)} onEdit={setEditingLog} />
-                  <Button 
-                    onClick={handleAnalyze}
-                    disabled={loadingAnalysis || logs.length === 0}
-                    className="w-full bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-500/50 text-zinc-300 text-xs font-bold py-7 rounded-2xl transition-all tracking-widest"
-                  >
-                    {loadingAnalysis ? 'ANALYZING...' : 'REFRESH ANALYSIS'}
-                  </Button>
-                </div>
               </div>
             </motion.div>
           )}
@@ -473,11 +503,63 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="max-w-4xl mx-auto"
+              className="max-w-4xl mx-auto space-y-8"
             >
-              <h2 className="text-2xl font-black text-white mb-8">Contribution History</h2>
-              <div className="bg-[#0F1317] p-8 rounded-3xl border border-zinc-500/50">
-                <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
+              <div>
+                <h2 className="text-2xl font-black text-white mb-8">Contribution History</h2>
+                <div className="bg-[#0F1317] p-8 rounded-3xl border border-zinc-500/50">
+                  <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
+                </div>
+              </div>
+
+              {/* Performance Review Details Section */}
+              <div className="space-y-6">
+                <div className="px-2">
+                  <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">Your Performance Review</h3>
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Metrics compiling consistency achievements</p>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Highest Streak */}
+                  <div className="bg-[#0F1317] border border-zinc-500/30 hover:border-yellow-500/25 p-6 rounded-3xl transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-950 flex items-center justify-center text-yellow-500 border border-zinc-500/50 mb-4 animate-pulse">
+                      <Flame className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                    </div>
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block mb-1">Highest Streak</span>
+                    <span className="text-xl font-black text-yellow-500 font-mono">{contributionMetrics.highestStreak} Days</span>
+                    <span className="text-[10px] text-zinc-400 block font-semibold mt-1">Your ultimate consistency peak</span>
+                  </div>
+
+                  {/* Total Log */}
+                  <div className="bg-[#0F1317] border border-zinc-500/30 hover:border-emerald-500/25 p-6 rounded-3xl transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500/50 mb-4">
+                      <Briefcase className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block mb-1">Total Logs</span>
+                    <span className="text-xl font-black text-emerald-400 font-mono">{contributionMetrics.totalLogs} Logs</span>
+                    <span className="text-[10px] text-zinc-400 block font-semibold mt-1">Across all repositories</span>
+                  </div>
+
+                  {/* Logged Days This Month */}
+                  <div className="bg-[#0F1317] border border-zinc-500/30 hover:border-emerald-500/25 p-6 rounded-3xl transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500/50 mb-4">
+                      <Calendar className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block mb-1">Logged (This Month)</span>
+                    <span className="text-xl font-black text-white font-mono">{contributionMetrics.loggedDaysThisMonth} Days</span>
+                    <span className="text-[10px] text-zinc-400 block font-semibold mt-1">Current calendar month active</span>
+                  </div>
+
+                  {/* Consistency Percentage */}
+                  <div className="bg-[#0F1317] border border-zinc-500/30 hover:border-emerald-500/25 p-6 rounded-3xl transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500/50 mb-4">
+                      <Sparkles className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block mb-1">Consistency Rate</span>
+                    <span className="text-xl font-black text-white font-mono">{contributionMetrics.consistencyPercentage}%</span>
+                    <span className="text-[10px] text-zinc-400 block font-semibold mt-1">Frequency ratio this year</span>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}

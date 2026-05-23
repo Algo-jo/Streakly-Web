@@ -12,6 +12,7 @@ interface ProfileCardProps {
     avatarUrl?: string;
     followersCount?: string;
     followingCount?: string;
+    highestStreak?: string;
   };
   onEditClick?: () => void;
   onLogout?: () => void;
@@ -76,6 +77,15 @@ export function ProfileCard({ streak, activityCount, profile, onEditClick, onLog
           <span className="text-xl font-bold tracking-tight font-mono text-white">{profile?.followingCount || '340'}</span>
           <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.1em] text-center">Following</span>
         </div>
+      </div>
+
+      <div className="w-full pt-6 mt-6 border-t border-zinc-500/50 flex items-center justify-between px-2 animate-in fade-in">
+        <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.1em] flex items-center gap-1.5">
+          <Flame className="w-4 h-4 text-yellow-500 fill-yellow-500" /> HIGHEST STREAK
+        </span>
+        <span className="text-sm font-bold font-mono text-yellow-500">
+          {profile?.highestStreak || '92'} Days
+        </span>
       </div>
     </div>
   );

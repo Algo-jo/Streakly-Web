@@ -391,48 +391,23 @@ export function Auth({ onLoginSuccess }: AuthProps) {
                   {/* Profile Picture */}
                   <div className="space-y-3">
                     <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Profile Picture (Empty FIRST for blank placeholder)</label>
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                      <div 
-                        className={`md:col-span-7 border border-dashed rounded-xl p-4 flex flex-col items-center justify-center gap-1 transition-all ${
-                          dragActive 
-                            ? 'border-emerald-500 bg-emerald-500/5' 
-                            : 'border-zinc-500 bg-zinc-950 hover:border-zinc-300'
-                        }`}
-                        onDragEnter={handleDrag}
-                        onDragOver={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDrop={handleDrop}
-                      >
-                        <Upload className="w-4 h-4 text-emerald-400" />
-                        <label className="cursor-pointer text-[10px] text-white font-extrabold hover:text-emerald-400 transition-colors">
-                          Upload avatar file
-                          <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-                        </label>
-                        <p className="text-[8px] text-zinc-500">or drop here</p>
-                      </div>
-
-                      <div className="md:col-span-5 bg-zinc-950/40 border border-zinc-500 rounded-xl p-4 flex flex-col justify-between gap-2">
-                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-                          <LinkIcon className="w-2.5 h-2.5 text-zinc-500" /> Link Photo URL
-                        </span>
-                        <div className="flex gap-2">
-                          <Input
-                            value={avatarUrl.startsWith('data:') ? '' : avatarUrl}
-                            onChange={(e) => setAvatarUrl(e.target.value)}
-                            placeholder="https://images.unsplash.com/..."
-                            className="bg-zinc-950 border-zinc-500 h-8 text-[11px] focus:ring-emerald-500/50 rounded-lg px-3 text-white flex-1"
-                          />
-                          {avatarUrl && (
-                            <Button 
-                              type="button" 
-                              onClick={() => setAvatarUrl('')}
-                              className="bg-zinc-900 border border-zinc-500 hover:bg-zinc-800 h-8 w-8 p-0 rounded-lg"
-                            >
-                              <X className="w-3 h-3 text-zinc-400" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
+                    <div 
+                      className={`w-full border border-dashed rounded-xl p-3 flex flex-col items-center justify-center gap-1 transition-all ${
+                        dragActive 
+                          ? 'border-emerald-500 bg-emerald-500/5' 
+                          : 'border-zinc-500 bg-zinc-950 hover:border-zinc-300'
+                      }`}
+                      onDragEnter={handleDrag}
+                      onDragOver={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDrop={handleDrop}
+                    >
+                      <Upload className="w-3.5 h-3.5 text-emerald-400" />
+                      <label className="cursor-pointer text-[10px] text-white font-extrabold hover:text-emerald-400 transition-colors">
+                        Upload avatar file
+                        <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                      </label>
+                      <p className="text-[8px] text-zinc-500">or drop here</p>
                     </div>
                   </div>
 

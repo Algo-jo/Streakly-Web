@@ -256,17 +256,6 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
             <Calendar className="w-4 h-4 text-emerald-500" />
             <h3 className="text-xs font-black text-zinc-400 uppercase tracking-[0.2em]">Contributions</h3>
           </div>
-          <DialogTrigger render={
-            <Button 
-              variant="link" 
-              onClick={() => {
-                setSelectedDateStr(logs.length > 0 ? logs[0].dateStr : format(today, 'yyyy-MM-dd'));
-              }}
-              className="text-xs font-black text-emerald-500 hover:text-emerald-400 p-0 h-auto tracking-widest uppercase cursor-pointer"
-            />
-          }>
-            VIEW DETAIL
-          </DialogTrigger>
         </div>
 
         <DialogContent className="bg-zinc-950 border-zinc-900 rounded-[2.5rem] sm:max-w-[96vw] xl:max-w-[1300px] w-full p-8 text-white h-[92vh] md:h-[88vh] flex flex-col overflow-hidden">
@@ -289,12 +278,12 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
               
               {/* Highest Streak Card */}
               <div className="bg-[#0F1317] border border-zinc-900 p-5 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500">
-                  <Flame className="w-6 h-6 fill-emerald-500/10 text-emerald-400 animate-pulse" />
+                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-yellow-500 border border-zinc-500">
+                  <Flame className="w-6 h-6 fill-yellow-500/20 text-yellow-500 animate-pulse" />
                 </div>
                 <div className="space-y-0.5">
                   <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block">Highest Streak</span>
-                  <span className="text-xl font-black text-white font-mono">{finalHighestStreak} Days</span>
+                  <span className="text-xl font-black text-yellow-500 font-mono">{finalHighestStreak} Days</span>
                   <span className="text-[10px] text-zinc-400 block font-semibold">Your ultimate consistency peak</span>
                 </div>
               </div>
