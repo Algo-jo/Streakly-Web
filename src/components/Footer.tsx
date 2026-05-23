@@ -30,7 +30,7 @@ export function Footer() {
               
               <div className="space-y-4 text-xs">
                 <div className="p-3.5 bg-zinc-900/50 border border-zinc-900 rounded-2xl">
-                  <span className="block font-black text-emerald-400 uppercase tracking-widest text-[9px] mb-1">1. CONTRIBUTION GRID HEATMAP</span>
+                  <span className="block font-black text-emerald-400 uppercase tracking-widest text-[9px] mb-1">1. HISTORY GRID HEATMAP</span>
                   <p className="text-zinc-400">
                     A visual grid inspired by GitHub commit charts. Displays your daily productivity across the entire calendar. Each block increases in brightness as you log more tasks. Includes tooltips revealing active task descriptions and totals.
                   </p>
@@ -39,7 +39,7 @@ export function Footer() {
                 <div className="p-3.5 bg-zinc-900/50 border border-zinc-900 rounded-2xl">
                   <span className="block font-black text-emerald-400 uppercase tracking-widest text-[9px] mb-1">2. DETAILED ACTIVITY LOGGING</span>
                   <p className="text-zinc-400">
-                    Submit detailed summaries of bugfixes, UI refactoring, or database sprints. You can assign labels, toggle statuses, specify duration, link dedicated repositories, and drag-and-drop attachment snapshots.
+                    Submit detailed summaries of bugfixes, UI refactoring, or database sprints. You can assign labels, toggle statuses, specify duration, link dedicated categories, and drag-and-drop attachment snapshots.
                   </p>
                 </div>
 
@@ -136,7 +136,7 @@ export function Footer() {
                 </div>
                 <div className="border-b border-zinc-900 pb-3">
                   <h4 className="font-extrabold text-white text-xs uppercase tracking-wider mb-1">Q: Code entries cannot be linked?</h4>
-                  <p className="text-zinc-400 text-xs text-justify">No, you can simply log activities or configure work links directly. Creating a log immediately tracks active contributions under your central timeline.</p>
+                  <p className="text-zinc-400 text-xs text-justify">No, you can simply log activities or configure work links directly. Creating a log immediately tracks active logs under your central timeline.</p>
                 </div>
                 <div className="border-b border-zinc-900 pb-3">
                   <h4 className="font-extrabold text-white text-xs uppercase tracking-wider mb-1">Q: Can I modify or delete previous logs?</h4>

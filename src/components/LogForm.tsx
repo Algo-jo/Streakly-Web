@@ -95,7 +95,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
     e.preventDefault();
     if (!title) return;
     
-    const finalContent = mode === 'repo' ? (content || `Repository ${title} created.`) : content;
+    const finalContent = mode === 'repo' ? (content || `Category ${title} created.`) : content;
     if (mode !== 'repo' && !finalContent) return;
     
     const metadata = {
@@ -151,60 +151,79 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
           {/* STEP 1: Metadata inputs */}
           {(mode === 'repo' || step === 1) && (
             <div className="space-y-5 animate-in fade-in slide-in-from-left-4 duration-300">
-              {/* Title column */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                  {mode === 'repo' ? 'REPOSITORY NAME' : 'ACTIVITY TITLE'} <span className="text-red-500">*</span>
-                </label>
-                <Input
-                  placeholder={mode === 'repo' ? "e.g. Streakly Dashboard" : "What activity are you working on?"}
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="bg-zinc-900/50 border-zinc-500 h-14 text-base font-bold focus:ring-emerald-500/50 rounded-2xl px-6"
-                  required
-                />
-              </div>
-
-              {/* Repository Links */}
-              {mode !== 'repo' && (
-                <div className="space-y-2 animate-in fade-in duration-300">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">SELECT REPOSITORY</label>
-                  <div className="relative">
-                    <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                    <select
-                      value={repo}
-                      onChange={(e) => setRepo(e.target.value)}
-                      className="w-full bg-zinc-900/50 border border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-zinc-300"
-                    >
-                      <option value="">None</option>
-                      {existingRepos.map(r => (
-                        <option key={r} value={r}>{r}</option>
-                      ))}
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <Plus className="w-4 h-4 text-zinc-600 rotate-45" />
+              
+              {/* Repository / Category Creator Mode (mode === 'repo') */}
+              {mode === 'repo' ? (
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
+                    CATEGORY NAME <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    placeholder="e.g. Designing UI"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="bg-zinc-900/50 border-zinc-500 h-14 text-base font-bold focus:ring-emerald-500/50 rounded-2xl px-6"
+                    required
+                  />
+                </div>
+              ) : (
+                /* Activity Log Mode (mode === 'activity') */
+                <>
+                  {/* Select Category first */}
+                  <div className="space-y-2 animate-in fade-in duration-300">
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">SELECT CATEGORY</label>
+                    <div className="relative">
+                      <Folder className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                      <select
+                        value={repo}
+                        onChange={(e) => setRepo(e.target.value)}
+                        className="w-full bg-zinc-900/50 border border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-zinc-300"
+                      >
+                        <option value="">None</option>
+                        {existingRepos.map(r => (
+                          <option key={r} value={r}>{r}</option>
+                        ))}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <Plus className="w-4 h-4 text-zinc-600 rotate-45" />
+                      </div>
                     </div>
                   </div>
-                </div>
+
+                  {/* Description input second */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
+                      DESCRIPTION <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      placeholder="What activity are you working on?"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="bg-zinc-900/50 border-zinc-500 h-14 text-base font-bold focus:ring-emerald-500/50 rounded-2xl px-6"
+                      required
+                    />
+                  </div>
+                </>
               )}
 
-              {/* Priority selection row */}
+              {/* Level selection row */}
               {mode !== 'repo' && (
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">ACTIVITY PRIORITY</label>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">ACTIVITY LEVEL</label>
                   <div className="grid grid-cols-4 gap-2">
-                    {(['NONE', 'LOW', 'MID', 'HIGH'] as const).map((p) => {
-                      const isSelected = priority === p;
+                    {(['NONE', 'EASY', 'MEDIUM', 'HARD'] as const).map((p) => {
+                      const dbVal = p === 'EASY' ? 'LOW' : p === 'MEDIUM' ? 'MID' : p === 'HARD' ? 'HIGH' : 'NONE';
+                      const isSelected = priority === dbVal;
                       return (
                         <button
                           key={p}
                           type="button"
-                          onClick={() => setPriority(p)}
+                          onClick={() => setPriority(dbVal)}
                           className={`h-11 rounded-xl border text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center ${
                             isSelected 
                               ? p === 'NONE' ? 'bg-zinc-800 text-white border-zinc-500' :
-                                p === 'LOW' ? 'bg-blue-500/10 text-blue-300 border-blue-500/50' :
-                                p === 'MID' ? 'bg-amber-500/10 text-amber-300 border-amber-500/50' :
+                                p === 'EASY' ? 'bg-blue-500/10 text-blue-300 border-blue-500/50' :
+                                p === 'MEDIUM' ? 'bg-amber-500/10 text-amber-300 border-amber-500/50' :
                                 'bg-red-500/10 text-red-300 border-red-500/50'
                               : 'bg-zinc-900/30 text-zinc-400 hover:bg-zinc-900 border-zinc-500'
                           }`}
@@ -327,7 +346,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
               disabled={!title}
               className="flex-1 h-14 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:hover:bg-emerald-500 disabled:cursor-not-allowed text-black font-extrabold text-base rounded-2xl transition-all flex items-center justify-center gap-2 shadow-[0_10px_25px_-10px_rgba(16,185,129,0.4)]"
             >
-              <Check className="w-5 h-5" /> CREATE REPOSITORY
+              <Check className="w-5 h-5" /> CREATE CATEGORY
             </Button>
           ) : step === 1 ? (
             <Button

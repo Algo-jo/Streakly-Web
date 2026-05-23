@@ -64,28 +64,11 @@ export function ProfileCard({ streak, activityCount, profile, onEditClick, onLog
         </Button>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 w-full pt-8 border-t border-zinc-500/50 text-white animate-in fade-in">
+      <div className="flex justify-center items-center w-full pt-8 border-t border-zinc-500/50 text-white animate-in fade-in">
         <div className="flex flex-col items-center gap-1">
-          <span className="text-xl font-bold tracking-tight font-mono text-emerald-400">{activityCount}</span>
-          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.1em] text-center">Activities</span>
+          <span className="text-2xl font-black tracking-tight font-mono text-emerald-400">{activityCount}</span>
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-[0.1em] text-center">Activities Logged</span>
         </div>
-        <div className="flex flex-col items-center gap-1 border-x border-zinc-500/50 px-1">
-          <span className="text-xl font-bold tracking-tight font-mono text-white">{profile?.followersCount || '1,280'}</span>
-          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.1em] text-center">Followers</span>
-        </div>
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-xl font-bold tracking-tight font-mono text-white">{profile?.followingCount || '340'}</span>
-          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.1em] text-center">Following</span>
-        </div>
-      </div>
-
-      <div className="w-full pt-6 mt-6 border-t border-zinc-500/50 flex items-center justify-between px-2 animate-in fade-in">
-        <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.1em] flex items-center gap-1.5">
-          <Flame className="w-4 h-4 text-yellow-500 fill-yellow-500" /> HIGHEST STREAK
-        </span>
-        <span className="text-sm font-bold font-mono text-yellow-500">
-          {profile?.highestStreak || '92'} Days
-        </span>
       </div>
     </div>
   );

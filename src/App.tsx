@@ -283,7 +283,7 @@ export default function App() {
                       }`}>
                         <DialogHeader className="p-8 pb-0 flex-shrink-0">
                           <DialogTitle className="text-2xl font-bold tracking-tight text-white">
-                            {modalStep === 'select' ? 'What are we logging?' : selectedMode === 'repo' ? 'New Repository' : 'New Activity'}
+                            {modalStep === 'select' ? 'What are we logging?' : selectedMode === 'repo' ? 'New Category' : 'New Activity'}
                           </DialogTitle>
                         </DialogHeader>
                         
@@ -301,8 +301,8 @@ export default function App() {
                                   <FolderOpen className="w-8 h-8 text-emerald-500" />
                                 </div>
                                 <div className="text-center">
-                                  <span className="block text-lg font-bold text-white mb-1">New Repository</span>
-                                  <span className="text-xs text-zinc-500">Log a new codebase or repo</span>
+                                  <span className="block text-lg font-bold text-white mb-1">New Category</span>
+                                  <span className="text-xs text-zinc-500">Log a new codebase or category</span>
                                 </div>
                               </button>
                               
@@ -342,8 +342,8 @@ export default function App() {
                 <section className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div className="flex items-center justify-between px-2">
                     <div className="space-y-1">
-                      <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">Activity Priority</h3>
-                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Ranked HIGH to LOW</p>
+                      <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">ACTIVITY LEVEL PRIORITY</h3>
+                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Ranked HARD to EASY</p>
                     </div>
                   </div>
 
@@ -354,7 +354,7 @@ export default function App() {
                       </div>
                       <div className="space-y-1">
                         <p className="text-zinc-400 text-sm font-semibold">Priority Activities is Empty</p>
-                        <p className="text-zinc-500 text-xs">Set a LOW, MID, or HIGH priority when adding an Activity to track them here!</p>
+                        <p className="text-zinc-500 text-xs">Set an EASY, MEDIUM, or HARD level when adding an Activity to track them here!</p>
                       </div>
                     </div>
                   ) : (
@@ -376,6 +376,7 @@ export default function App() {
                           LOW: 'bg-blue-500/20 border-blue-500/50 text-blue-400',
                         };
 
+                        const displayLevel = act.priority === 'HIGH' ? 'HARD' : act.priority === 'MID' ? 'MEDIUM' : act.priority === 'LOW' ? 'EASY' : act.priority;
                         const priorityClass = bgColors[act.priority as 'HIGH' | 'MID' | 'LOW'] || '';
                         const hoverClass = hoverRing[act.priority as 'HIGH' | 'MID' | 'LOW'] || '';
                         const badgeClass = badgeColors[act.priority as 'HIGH' | 'MID' | 'LOW'] || '';
@@ -387,7 +388,7 @@ export default function App() {
                           >
                             <div className="flex justify-between items-start mb-3 gap-2">
                               <span className={`text-[9px] font-black tracking-widest uppercase border px-2.5 py-0.5 rounded-full ${badgeClass}`}>
-                                {act.priority} PRIORITY
+                                {displayLevel} LEVEL
                               </span>
                               <span className="text-[9px] text-zinc-500 font-bold tracking-tight bg-zinc-950/40 px-2 py-0.5 rounded border border-zinc-500 font-mono">
                                 {format(act.timestamp, 'MMM d')}
@@ -411,7 +412,7 @@ export default function App() {
 
                 <section className="space-y-6">
                   <div className="flex items-center justify-between px-2">
-                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">Recent Repository</h3>
+                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em]">Recent Category</h3>
                     <button 
                       onClick={() => setActiveTab('logs')}
                       className="text-xs font-bold text-emerald-500 hover:text-emerald-400 transition-colors cursor-pointer"
@@ -430,7 +431,7 @@ export default function App() {
                     ))}
                     {logs.filter(l => l.category === 'code').length === 0 && (
                       <div className="col-span-2 p-16 bg-[#0F1317] rounded-3xl border border-dashed border-zinc-500/50 flex flex-col items-center text-center gap-4">
-                        <p className="text-zinc-400 text-sm font-medium">No repositoried made yet. start by making a new repository!</p>
+                        <p className="text-zinc-400 text-sm font-medium">No categories made yet. Start by making a new category!</p>
                       </div>
                     )}
                   </div>
@@ -453,7 +454,7 @@ export default function App() {
                           <h4 className="text-emerald-500 font-bold text-sm tracking-tight">{log.title}</h4>
                           {log.priority && log.priority !== 'NONE' && (
                             <span className="text-[8px] font-black tracking-widest px-1.5 py-0.5 border border-zinc-500 text-zinc-400 bg-zinc-900 rounded uppercase leading-none">
-                              {log.priority}
+                              {log.priority === 'HIGH' ? 'HARD' : log.priority === 'MID' ? 'MEDIUM' : log.priority === 'LOW' ? 'EASY' : log.priority}
                             </span>
                           )}
                         </div>
@@ -491,8 +492,8 @@ export default function App() {
               className="max-w-4xl mx-auto"
             >
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-black text-white">Repository</h2>
-                <span className="text-sm text-zinc-500">{logs.filter(l => l.category === 'code').length} repository logs found</span>
+                <h2 className="text-2xl font-black text-white">Category</h2>
+                <span className="text-sm text-zinc-500">{logs.filter(l => l.category === 'code').length} category logs found</span>
               </div>
               <LogList logs={logs.filter(l => l.category === 'code')} onEdit={setEditingLog} />
             </motion.div>
@@ -523,7 +524,7 @@ export default function App() {
               className="max-w-4xl mx-auto space-y-8"
             >
               <div>
-                <h2 className="text-2xl font-black text-white mb-8">Contribution History</h2>
+                <h2 className="text-2xl font-black text-white mb-8">History</h2>
                 <div className="bg-[#0F1317] p-8 rounded-3xl border border-zinc-500/50">
                   <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
                 </div>
@@ -554,7 +555,7 @@ export default function App() {
                     </div>
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block mb-1">Total Logs</span>
                     <span className="text-xl font-black text-emerald-400 font-mono">{contributionMetrics.totalLogs} Logs</span>
-                    <span className="text-[10px] text-zinc-400 block font-semibold mt-1">Across all repositories</span>
+                    <span className="text-[10px] text-zinc-400 block font-semibold mt-1">Across all categories</span>
                   </div>
 
                   {/* Logged Days This Month */}

@@ -37,25 +37,35 @@ export function LogList({ logs, onEdit }: LogListProps) {
       {sortedLogs.map((log) => {
         const Icon = iconMap[log.category] || MoreHorizontal;
         
-        // Priority styling definitions
-        const priorityStyles = {
-          HIGH: 'border-red-500/30 text-red-400 bg-red-500/10',
-          MID: 'border-amber-500/30 text-amber-400 bg-amber-500/10',
-          LOW: 'border-blue-500/30 text-blue-400 bg-blue-500/10',
+        // Level styling definitions
+        const levelStyles = {
+          HARD: 'border-red-500/30 text-red-400 bg-red-500/10',
+          MEDIUM: 'border-amber-500/30 text-amber-400 bg-amber-500/10',
+          EASY: 'border-blue-500/30 text-blue-400 bg-blue-500/10',
           NONE: 'border-zinc-500 text-zinc-500 bg-zinc-900/40',
         };
 
         const hasPriority = log.priority && log.priority !== 'NONE';
 
+        // Map old / new priority values safely for display
+        const getDisplayLevel = (p: string) => {
+          if (p === 'LOW' || p === 'EASY') return 'EASY';
+          if (p === 'MID' || p === 'MEDIUM') return 'MEDIUM';
+          if (p === 'HIGH' || p === 'HARD') return 'HARD';
+          return p;
+        };
+
+        const displayLevel = log.priority ? getDisplayLevel(log.priority) : 'NONE';
+
         return (
-          <div key={log.id} className="bg-[#0F1317] border border-zinc-500/50 rounded-3xl p-6 hover:border-emerald-500/30 transition-all group">
-            <div className="flex justify-between items-start mb-4 gap-2">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-zinc-950 rounded-2xl border border-zinc-500 group-hover:border-emerald-500/50 transition-colors">
+          <div key={log.id} className="bg-[#0F1317] border border-zinc-500/50 rounded-3xl p-5 sm:p-6 hover:border-emerald-500/30 transition-all group">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 pb-4 border-b border-zinc-500/10 sm:border-b-0 sm:pb-0">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-2.5 sm:p-3 bg-zinc-950 rounded-2xl border border-zinc-500 group-hover:border-emerald-500/50 transition-colors flex-shrink-0">
                   <Icon className="w-5 h-5 text-emerald-500" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-zinc-100 group-hover:text-emerald-400 transition-colors tracking-tight">{log.title}</h3>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-zinc-100 group-hover:text-emerald-400 transition-colors tracking-tight text-sm sm:text-base line-clamp-1">{log.title}</h3>
                   <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-bold uppercase tracking-[0.15em] mt-1">
                     <Clock className="w-3 h-3" />
                     {format(log.timestamp, 'MMM d, h:mm a')}
@@ -63,28 +73,28 @@ export function LogList({ logs, onEdit }: LogListProps) {
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                {/* Priority status display if present */}
+              <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+                {/* Level status display if present */}
                 {hasPriority && (
                   <Badge 
                     variant="outline" 
-                    className={`text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border ${priorityStyles[log.priority!]}`}
+                    className={`text-[9px] sm:text-[10px] font-black tracking-widest uppercase px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border ${levelStyles[displayLevel as 'EASY' | 'MEDIUM' | 'HARD' | 'NONE'] || levelStyles.NONE}`}
                   >
-                    {log.priority} PRIORITY
+                    {displayLevel} LEVEL
                   </Badge>
                 )}
 
-                <Badge variant="outline" className="text-[10px] font-bold tracking-widest uppercase border-zinc-500 text-zinc-500 px-3 py-1 rounded-full bg-zinc-900/20">
-                  {log.category === 'code' ? 'Repository code' : 'Activity log'}
+                <Badge variant="outline" className="text-[9px] sm:text-[10px] font-bold tracking-widest uppercase border-zinc-500 text-zinc-500 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-zinc-900/20">
+                  {log.category === 'code' ? 'Category log' : 'Activity log'}
                 </Badge>
 
                 {onEdit && (
                   <button
                     onClick={() => onEdit(log)}
-                    className="p-2 bg-zinc-950 border border-zinc-500 text-zinc-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)] ml-1"
+                    className="p-1.5 sm:p-2 bg-zinc-950 border border-zinc-500 text-zinc-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-xl transition-all cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
                     title="Edit Activity"
                   >
-                    <Edit2 className="w-3.5 h-3.5" />
+                    <Edit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </button>
                 )}
               </div>

@@ -254,7 +254,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-emerald-500" />
-            <h3 className="text-xs font-black text-zinc-400 uppercase tracking-[0.2em]">Contributions</h3>
+            <h3 className="text-xs font-black text-zinc-400 uppercase tracking-[0.2em]">History</h3>
           </div>
         </div>
 
@@ -331,7 +331,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
               <div className="bg-[#0F1317] border border-zinc-900 rounded-[2rem] p-6 flex flex-col min-h-[350px] md:min-h-[400px]">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-900 pb-4 mb-4 flex-shrink-0">
                   <h4 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-emerald-500" /> {formattedSelectedDate} ({selectedDateLogs.length} {selectedDateLogs.length === 1 ? 'Contribution' : 'Contributions'})
+                    <Calendar className="w-4 h-4 text-emerald-500" /> {formattedSelectedDate} ({selectedDateLogs.length} {selectedDateLogs.length === 1 ? 'Log' : 'Logs'})
                   </h4>
                   <span className="text-[9px] uppercase font-black tracking-widest text-[#94A3B8]">Chronological view</span>
                 </div>
@@ -454,7 +454,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-zinc-950 text-[10px] font-mono text-zinc-200 rounded-xl border border-zinc-500 opacity-0 group-hover:opacity-100 pointer-events-none transition-all scale-75 group-hover:scale-100 whitespace-nowrap z-[9999] shadow-2xl">
                         <div className="flex flex-col gap-1">
                           <span className="text-emerald-500 font-bold border-b border-zinc-500 pb-1 mb-1">{format(day, 'EEEE, MMM d')}</span>
-                          <span>{logCount} {logCount === 1 ? 'contribution' : 'contributions'}</span>
+                          <span>{logCount} {logCount === 1 ? 'log' : 'logs'}</span>
                           <span className="text-[8px] text-zinc-500 uppercase mt-0.5 font-bold">Click to view detail</span>
                         </div>
                       </div>
@@ -468,16 +468,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
       </div>
 
       <div className="flex justify-between items-center pt-4 border-t border-zinc-500/50">
-        <span className="text-[10px] font-medium text-zinc-500">Learn how we count contributions</span>
-        <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-          <span>Less</span>
-          <div className="flex gap-1">
-            {levelColors.map((color, i) => (
-              <div key={i} className={cn("w-2.5 h-2.5 rounded-[2px]", color)} />
-            ))}
-          </div>
-          <span>More</span>
-        </div>
+        <span className="text-[10px] font-medium text-zinc-500">Learn how we count history</span>
       </div>
     </div>
   );

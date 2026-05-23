@@ -121,30 +121,8 @@ export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditP
             <p className="text-xs text-zinc-400 font-medium line-clamp-2 px-2 leading-relaxed">{bio || 'Your bio will appear here.'}</p>
           </div>
 
-          {/* Metadata previews */}
-          <div className="w-full space-y-3 pt-6 border-t border-zinc-500/50 text-white">
-            {github && (
-              <div className="flex items-center gap-2 text-zinc-500 text-xs font-mono justify-center hover:text-white transition-colors">
-                <Github className="w-3.5 h-3.5 text-zinc-400" />
-                github.com/{github}
-              </div>
-            )}
-            
-            <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-zinc-500/20 w-full text-center">
-              <div>
-                <span className="block text-white font-black text-sm">{followersCount || '1,280'}</span>
-                <span className="text-[8px] font-black tracking-tighter text-zinc-500 uppercase">Followers</span>
-              </div>
-              <div>
-                <span className="block text-yellow-500 font-black text-sm">{highestStreak || '56'}</span>
-                <span className="text-[8px] font-black tracking-tighter text-yellow-500/80 uppercase select-none">Highest Streak</span>
-              </div>
-              <div>
-                <span className="block text-white font-black text-sm">{followingCount || '340'}</span>
-                <span className="text-[8px] font-black tracking-tighter text-zinc-500 uppercase">Following</span>
-              </div>
-            </div>
-          </div>
+          {/* Profile metadata info divider if required */}
+          <div className="w-full pt-6 border-t border-zinc-500/20 text-white" />
         </div>
       </div>
 
@@ -222,51 +200,6 @@ export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditP
                 </label>
                 <p className="text-[10px] text-zinc-500 mt-0.5">or drag & drop here</p>
               </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">GitHub Username</label>
-            <div className="relative">
-              <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-              <Input
-                value={github}
-                onChange={(e) => setGithub(e.target.value)}
-                placeholder="github-username"
-                className="bg-zinc-950 border-zinc-500 pl-11 h-12 rounded-2xl text-sm font-mono text-white"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Highest Streak</label>
-              <Input
-                value={highestStreak}
-                onChange={(e) => setHighestStreak(e.target.value)}
-                placeholder="56"
-                className="bg-zinc-950 border-zinc-500 h-12 text-sm font-bold focus:ring-emerald-500/50 rounded-2xl px-5 text-white"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Followers Count</label>
-              <Input
-                value={followersCount}
-                onChange={(e) => setFollowersCount(e.target.value)}
-                placeholder="1,280"
-                className="bg-zinc-950 border-zinc-500 h-12 text-sm font-bold focus:ring-emerald-500/50 rounded-2xl px-5 text-white"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Following Count</label>
-              <Input
-                value={followingCount}
-                onChange={(e) => setFollowingCount(e.target.value)}
-                placeholder="340"
-                className="bg-zinc-950 border-zinc-500 h-12 text-sm font-bold focus:ring-emerald-500/50 rounded-2xl px-5 text-white"
-              />
             </div>
           </div>
 

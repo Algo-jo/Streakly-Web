@@ -410,65 +410,6 @@ export function Auth({ onLoginSuccess }: AuthProps) {
                       <p className="text-[8px] text-zinc-500">or drop here</p>
                     </div>
                   </div>
-
-                  {/* GitHub + Tech Stack */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">GitHub Username</label>
-                      <div className="relative">
-                        <Github className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
-                        <Input
-                          value={github}
-                          onChange={(e) => setGithub(e.target.value)}
-                          placeholder="github-username"
-                          className="bg-zinc-950 border-zinc-500 pl-10 h-11 rounded-xl text-xs font-mono text-white"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Tech Stack Tags</label>
-                      <Input
-                        value={techStack}
-                        onChange={(e) => setTechStack(e.target.value)}
-                        placeholder="React, TypeScript, Tailwind"
-                        className="bg-zinc-950 border-zinc-500 h-11 text-xs font-bold focus:ring-emerald-500/50 rounded-xl px-4 text-white"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Streaks and Followers Counts */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider ml-1">Highest Streak</label>
-                      <Input
-                        value={highestStreak}
-                        onChange={(e) => setHighestStreak(e.target.value)}
-                        placeholder="0"
-                        className="bg-zinc-950 border-zinc-500 h-11 text-xs font-bold focus:ring-emerald-500/50 rounded-xl px-3 text-white"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider ml-1">Followers Count</label>
-                      <Input
-                        value={followersCount}
-                        onChange={(e) => setFollowersCount(e.target.value)}
-                        placeholder="0"
-                        className="bg-zinc-950 border-zinc-500 h-11 text-xs font-bold focus:ring-emerald-500/50 rounded-xl px-3 text-white"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider ml-1">Following Count</label>
-                      <Input
-                        value={followingCount}
-                        onChange={(e) => setFollowingCount(e.target.value)}
-                        placeholder="0"
-                        className="bg-zinc-950 border-zinc-500 h-11 text-xs font-bold focus:ring-emerald-500/50 rounded-xl px-3 text-white"
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
 
