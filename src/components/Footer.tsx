@@ -23,7 +23,7 @@ export function Footer() {
           title: "Streakly Navigation Guide",
           subtitle: "Get the most out of your consistency dashboard",
           body: (
-            <div className="space-y-4 font-sans text-sm text-zinc-350 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-zinc-800">
+            <div className="space-y-4 font-sans text-sm text-zinc-350 pr-2">
               <p className="text-sm">
                 Streakly is an offline-first consistency dashboard designed specifically for builders. It removes traditional clutter to focus on compounding your technical habit. Here is an overview of all system features:
               </p>
@@ -128,7 +128,7 @@ export function Footer() {
           title: "Frequently Asked Questions",
           subtitle: "Quick answers about Streakly operations",
           body: (
-            <div className="space-y-4 font-sans text-sm text-zinc-300 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-zinc-800">
+            <div className="space-y-4 font-sans text-sm text-zinc-300 pr-2">
               <div className="space-y-4">
                 <div className="border-b border-zinc-900 pb-3">
                   <h4 className="font-extrabold text-white text-xs uppercase tracking-wider mb-1">Q: How is my streak calculated?</h4>
@@ -199,24 +199,20 @@ export function Footer() {
 
       {modalContent && (
         <Dialog open={!!selectedItem} onOpenChange={(open) => { if (!open) setSelectedItem(null); }}>
-          <DialogContent className="bg-zinc-950 border border-zinc-500 text-white rounded-3xl p-8 max-w-[500px]">
-            <DialogHeader className="flex flex-row items-center gap-4 space-y-0 pb-4 border-b border-zinc-900">
-              {modalContent.icon}
-              <div className="space-y-1">
-                <DialogTitle className="text-xl font-bold tracking-tight text-white">{modalContent.title}</DialogTitle>
-                <p className="text-xs text-zinc-500 font-medium">{modalContent.subtitle}</p>
+          <DialogContent className="bg-zinc-950 border border-zinc-500 text-white rounded-3xl p-0 overflow-hidden sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col transition-all duration-300">
+            <DialogHeader className="p-8 pb-5 flex-shrink-0 flex flex-row items-center gap-4 space-y-0 border-b border-zinc-900">
+              <div className="p-3.5 bg-zinc-900 border border-zinc-500/20 rounded-2xl shrink-0">
+                {modalContent.icon}
+              </div>
+              <div className="space-y-1 min-w-0">
+                <DialogTitle className="text-2xl font-black tracking-tight text-white truncate">{modalContent.title}</DialogTitle>
+                <p className="text-xs text-emerald-400 font-bold tracking-wider uppercase">{modalContent.subtitle}</p>
               </div>
             </DialogHeader>
-            <div className="py-6">
-              {modalContent.body}
-            </div>
-            <div className="pt-4 border-t border-zinc-900 flex justify-end">
-              <Button 
-                onClick={() => setSelectedItem(null)}
-                className="bg-zinc-900 border border-zinc-500 hover:bg-zinc-850 hover:text-white text-zinc-300 font-bold px-6 h-11 rounded-xl transition-all"
-              >
-                <Check className="w-4 h-4 mr-2 text-emerald-500" /> Done
-              </Button>
+            <div className="p-8 pb-6 flex-1 overflow-y-auto min-h-0 bg-gradient-to-b from-zinc-950 to-black">
+              <div className="max-w-4xl mx-auto py-4">
+                {modalContent.body}
+              </div>
             </div>
           </DialogContent>
         </Dialog>

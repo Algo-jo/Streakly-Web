@@ -247,7 +247,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
   };
 
   return (
-    <div className="flex flex-col gap-6 p-8 bg-[#0F1317] rounded-[2.2rem] border border-zinc-500/50 backdrop-blur-sm relative z-20">
+    <div className="flex flex-col gap-4 relative z-20">
       
       {/* Detail Dialog Popup Wrapper */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>

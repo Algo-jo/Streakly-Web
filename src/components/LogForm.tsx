@@ -35,7 +35,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
   const [repo, setRepo] = useState(initialData?.metadata?.repo || '');
   const [folder, setFolder] = useState(initialData?.metadata?.folder || '');
   const [tags, setTags] = useState(initialData?.metadata?.tags?.join(', ') || '');
-  const [priority, setPriority] = useState<'NONE' | 'LOW' | 'MID' | 'HIGH'>(initialData?.priority || 'NONE');
+  const [priority, setPriority] = useState<'NONE' | 'LOW' | 'MID' | 'HIGH'>(initialData?.priority || 'LOW');
   const [files, setFiles] = useState<{ name: string; size: string; previewUrl?: string }[]>(initialData?.files || []);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -200,9 +200,9 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                 {/* Activity Level selection */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">ACTIVITY LEVEL</label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {(['NONE', 'EASY', 'MEDIUM', 'HARD'] as const).map((p) => {
-                      const dbVal = p === 'EASY' ? 'LOW' : p === 'MEDIUM' ? 'MID' : p === 'HARD' ? 'HIGH' : 'NONE';
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['EASY', 'MEDIUM', 'HARD'] as const).map((p) => {
+                      const dbVal = p === 'EASY' ? 'LOW' : p === 'MEDIUM' ? 'MID' : 'HIGH';
                       const isSelected = priority === dbVal;
                       return (
                         <button
@@ -211,8 +211,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                           onClick={() => setPriority(dbVal)}
                           className={`h-11 rounded-xl border text-xs font-bold tracking-wider uppercase transition-all flex items-center justify-center cursor-pointer ${
                             isSelected 
-                              ? p === 'NONE' ? 'bg-zinc-800 text-white border-zinc-500' :
-                                p === 'EASY' ? 'bg-blue-500/10 text-blue-300 border-blue-500/50' :
+                              ? p === 'EASY' ? 'bg-blue-500/10 text-blue-300 border-blue-500/50' :
                                 p === 'MEDIUM' ? 'bg-amber-500/10 text-amber-300 border-amber-500/50' :
                                 'bg-red-500/10 text-red-300 border-red-500/50'
                               : 'bg-zinc-900/30 text-zinc-400 hover:bg-zinc-900 border-zinc-500'

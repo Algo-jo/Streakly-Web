@@ -20,9 +20,10 @@ interface ProfileEditProps {
   profile: ProfileData;
   onUpdateProfile: (updated: ProfileData) => void;
   onLogout?: () => void;
+  activityCount?: number;
 }
 
-export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditProps) {
+export function ProfileEdit({ profile, onUpdateProfile, onLogout, activityCount = 0 }: ProfileEditProps) {
   const [name, setName] = useState(profile.name);
   const [role, setRole] = useState(profile.role);
   const [bio, setBio] = useState(profile.bio);
@@ -121,8 +122,21 @@ export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditP
             <p className="text-xs text-zinc-400 font-medium line-clamp-2 px-2 leading-relaxed">{bio || 'Your bio will appear here.'}</p>
           </div>
 
-          {/* Profile metadata info divider if required */}
-          <div className="w-full pt-6 border-t border-zinc-500/20 text-white" />
+          {/* Profile metadata info divider with Activities Logged, Followers, and Following */}
+          <div className="grid grid-cols-3 gap-2 w-full pt-6 border-t border-zinc-500/20 text-white">
+            <div className="flex flex-col items-center gap-0.5 min-w-0 pr-1 border-r border-zinc-500/20">
+              <span className="text-lg font-black tracking-tight font-mono text-emerald-400 truncate w-full">{activityCount}</span>
+              <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.05em] text-center">Logs</span>
+            </div>
+            <div className="flex flex-col items-center gap-0.5 min-w-0 px-1 border-r border-zinc-500/20">
+              <span className="text-lg font-black tracking-tight font-mono text-white truncate w-full">{followersCount || '1,280'}</span>
+              <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.05em] text-center">Followers</span>
+            </div>
+            <div className="flex flex-col items-center gap-0.5 min-w-0 pl-1">
+              <span className="text-lg font-black tracking-tight font-mono text-white truncate w-full">{followingCount || '340'}</span>
+              <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.05em] text-center">Following</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -212,15 +226,6 @@ export function ProfileEdit({ profile, onUpdateProfile, onLogout }: ProfileEditP
               <span className="text-xs text-zinc-500 font-semibold">Changes are instantly persistent.</span>
             )}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-              {onLogout && (
-                <Button
-                  type="button"
-                  onClick={onLogout}
-                  className="bg-transparent hover:bg-red-500/10 border border-red-500/40 text-red-400 hover:text-red-300 font-bold rounded-2xl px-6 h-13 transition-all select-none w-full sm:w-auto cursor-pointer"
-                >
-                  Sign Out
-                </Button>
-              )}
               <Button
                 type="submit"
                 className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-2xl px-10 h-13 transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] select-none w-full sm:w-auto cursor-pointer"

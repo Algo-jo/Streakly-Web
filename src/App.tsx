@@ -11,7 +11,7 @@ import { FollowingSection } from './components/FollowingSection';
 import { WorkLog, analyzeProductivity, ProductivityAnalysis } from './lib/gemini';
 import { format, parseISO } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
-import { Brain, Sparkles, Plus, FolderOpen, Briefcase, Paperclip, Flame, Calendar, Filter, Folder, Layers } from 'lucide-react';
+import { Brain, Sparkles, Plus, FolderOpen, Briefcase, Paperclip, Flame, Calendar, Filter, Folder, Layers, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
@@ -30,6 +30,7 @@ export default function App() {
   const [addFormStep, setAddFormStep] = useState(1);
   const [editingLogStep, setEditingLogStep] = useState(1);
   const [selectedHistoryCategory, setSelectedHistoryCategory] = useState<string | null>(null);
+  const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
 
   const handleAuthSuccess = (profileData: any) => {
     setProfile(profileData);
@@ -302,7 +303,9 @@ export default function App() {
               {/* Left Column */}
               <div className="lg:col-span-8 space-y-12">
                 <section className="space-y-8">
-                  <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
+                  <div className="bg-[#0F1317] p-8 rounded-3xl border border-zinc-500/50">
+                    <ContributionGraph logs={logs} highestStreak={profile.highestStreak} />
+                  </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-8 bg-[#0F1317] rounded-3xl border border-zinc-500/50">
                     <div className="space-y-1.5">
                       <h3 className="text-2xl font-bold text-white tracking-tight">You are on {streak} Days Streak</h3>
@@ -331,7 +334,7 @@ export default function App() {
                         className="bg-zinc-900 hover:bg-zinc-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/60 font-bold px-6 py-7 rounded-2xl transition-all text-base whitespace-nowrap cursor-pointer flex items-center gap-2"
                       >
                         <FolderOpen className="w-5 h-5" />
-                        + Add Category
+                        Add Category
                       </Button>
 
                       <Button
@@ -342,8 +345,8 @@ export default function App() {
                         }}
                         className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-8 py-7 rounded-2xl transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] text-base whitespace-nowrap cursor-pointer flex items-center gap-2"
                       >
-                        <Plus className="w-5 h-5" />
-                        + Add Activity
+                        <Sparkles className="w-5 h-5" />
+                        Add Activity
                       </Button>
 
                       <Dialog open={isLogModalOpen} onOpenChange={setIsLogModalOpen}>
@@ -559,50 +562,114 @@ export default function App() {
                 <h2 className="text-2xl font-black text-white mb-6">History</h2>
                 
                 {/* Visual Category Filter Toolbar */}
-                <div className="bg-[#0F1317]/50 border border-zinc-500/20 p-5 rounded-3xl mb-6 shadow-xl animate-in fade-in duration-300">
+                <div className="bg-[#0F1317]/50 border border-zinc-500/20 p-5 rounded-3xl mb-6 shadow-xl animate-in fade-in duration-300 relative z-50">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 font-sans">
                         <Filter className="w-4 h-4 text-emerald-400" />
                         <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">
-                          Filter Calendar & Metrics
+                          Workspace Domain Switcher
                         </span>
                       </div>
                       <p className="text-[11px] font-medium text-zinc-500">
-                        Isolating database logs and streak calculations to a specific category
+                        Isolating database logs, streak calculations, and calendar activities to a specific focus area
                       </p>
                     </div>
                     
-                    <div className="flex flex-wrap items-center gap-2">
+                    {/* Custom Dropdown Trigger */}
+                    <div className="relative">
                       <button
-                        onClick={() => setSelectedHistoryCategory(null)}
-                        className={`inline-flex items-center px-4 py-2.5 rounded-2xl text-xs font-bold tracking-wide transition-all duration-200 cursor-pointer ${
-                          selectedHistoryCategory === null
-                            ? 'bg-emerald-500 text-black font-extrabold shadow-[0_8px_20px_-6px_rgba(16,185,129,0.4)]'
-                            : 'bg-zinc-950 border border-zinc-500/20 text-zinc-400 hover:text-white hover:border-zinc-500/40'
-                        }`}
+                        onClick={() => setIsHistoryFilterOpen(prev => !prev)}
+                        className="inline-flex items-center justify-between w-full lg:w-56 px-4.5 py-3 rounded-2xl text-xs font-bold bg-zinc-950 border border-zinc-500/30 text-emerald-400 hover:text-emerald-300 hover:border-emerald-500/40 transition-all duration-200 cursor-pointer shadow-md select-none"
                       >
-                        <Layers className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-                        All Categories
+                        <span className="flex items-center gap-2 truncate">
+                          {selectedHistoryCategory === null ? (
+                            <>
+                              <Layers className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                              <span className="truncate">All Focus Areas</span>
+                            </>
+                          ) : (
+                            <>
+                              <Folder className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                              <span className="truncate">{selectedHistoryCategory}</span>
+                            </>
+                          )}
+                        </span>
+                        <ChevronDown className={`w-3.5 h-3.5 ml-2 text-zinc-400 transition-transform duration-200 shrink-0 ${isHistoryFilterOpen ? 'rotate-180' : ''}`} />
                       </button>
-                      
-                      {existingRepos.map((cat) => {
-                        const isSelected = selectedHistoryCategory === cat;
-                        return (
-                          <button
-                            key={cat}
-                            onClick={() => setSelectedHistoryCategory(cat)}
-                            className={`inline-flex items-center px-4 py-2.5 rounded-2xl text-xs font-bold tracking-wide transition-all duration-200 cursor-pointer ${
-                              isSelected
-                                ? 'bg-emerald-500 text-black font-extrabold shadow-[0_8px_20px_-6px_rgba(16,185,129,0.4)]'
-                                : 'bg-zinc-950 border border-zinc-500/20 text-emerald-400/95 font-extrabold hover:text-emerald-300 hover:border-emerald-500/40'
-                            }`}
-                          >
-                            <Folder className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-                            {cat}
-                          </button>
-                        );
-                      })}
+
+                      <AnimatePresence>
+                        {isHistoryFilterOpen && (
+                          <>
+                            {/* Backdrop overlay to close on clicking elsewhere */}
+                            <div 
+                              className="fixed inset-0 z-40 cursor-default" 
+                              onClick={() => setIsHistoryFilterOpen(false)} 
+                            />
+                            
+                            <motion.div
+                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute right-0 mt-2 w-full lg:w-64 bg-zinc-950 border border-zinc-500/40 rounded-2xl shadow-[0_15px_50px_rgba(0,0,0,0.8)] p-2 z-50 overflow-hidden flex flex-col space-y-1 align-left text-left"
+                            >
+                              <div className="px-3 py-1.5 border-b border-zinc-900 mb-1">
+                                <span className="text-[9px] font-black tracking-widest text-zinc-500 uppercase">
+                                  Scope Options
+                                </span>
+                              </div>
+                              
+                              <button
+                                onClick={() => {
+                                  setSelectedHistoryCategory(null);
+                                  setIsHistoryFilterOpen(false);
+                                }}
+                                className={`flex items-center justify-between w-full px-3 py-2.5 text-left text-xs font-bold rounded-xl transition-all duration-150 cursor-pointer ${
+                                  selectedHistoryCategory === null
+                                    ? 'bg-emerald-500/10 text-emerald-400 font-extrabold'
+                                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900/40'
+                                }`}
+                              >
+                                <span className="flex items-center gap-2 truncate">
+                                  <Layers className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                  <span className="truncate">All Focus Areas</span>
+                                </span>
+                                <span className="text-[10px] bg-zinc-900 text-zinc-500 font-extrabold px-2 py-0.5 rounded-md shrink-0">
+                                  {logs.length}
+                                </span>
+                              </button>
+
+                              {existingRepos.map((cat) => {
+                                const isSelected = selectedHistoryCategory === cat;
+                                const count = logs.filter(l => l.metadata?.repo === cat || (l.category === 'code' && l.title === cat)).length;
+                                return (
+                                  <button
+                                    key={cat}
+                                    onClick={() => {
+                                      setSelectedHistoryCategory(cat);
+                                      setIsHistoryFilterOpen(false);
+                                    }}
+                                    className={`flex items-center justify-between w-full px-3 py-2.5 text-left text-xs font-bold rounded-xl transition-all duration-150 cursor-pointer ${
+                                      isSelected
+                                        ? 'bg-emerald-500/10 text-emerald-400 font-extrabold'
+                                        : 'text-zinc-400 hover:text-white hover:bg-zinc-900/40'
+                                    }`}
+                                  >
+                                    <span className="flex items-center gap-2 truncate">
+                                      <Folder className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                      <span className="truncate">{cat}</span>
+                                    </span>
+                                    <span className="text-[10px] bg-zinc-900 text-zinc-500 font-extrabold px-2 py-0.5 rounded-md shrink-0">
+                                      {count}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
                 </div>
@@ -690,13 +757,19 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="max-w-7xl mx-auto"
             >
-              <div className="flex justify-between items-center mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                   <h2 className="text-2xl font-black text-white">Your Developer Card</h2>
                   <p className="text-sm text-zinc-500 font-semibold mt-1">Configure Display Settings, Tech Stack and personal Bio attributes</p>
                 </div>
+                <Button
+                  onClick={handleLogout}
+                  className="bg-transparent hover:bg-red-500/10 border border-red-500/40 text-red-400 hover:text-red-300 font-bold rounded-2xl px-6 py-6 transition-all cursor-pointer whitespace-nowrap self-start sm:self-auto"
+                >
+                  Sign Out
+                </Button>
               </div>
-              <ProfileEdit profile={profile} onUpdateProfile={setProfile} onLogout={handleLogout} />
+              <ProfileEdit profile={profile} onUpdateProfile={setProfile} onLogout={handleLogout} activityCount={logs.length} />
             </motion.div>
           )}
         </AnimatePresence>

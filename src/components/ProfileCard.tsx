@@ -64,10 +64,18 @@ export function ProfileCard({ streak, activityCount, profile, onEditClick, onLog
         </Button>
       </div>
 
-      <div className="flex justify-center items-center w-full pt-8 border-t border-zinc-500/50 text-white animate-in fade-in">
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-2xl font-black tracking-tight font-mono text-emerald-400">{activityCount}</span>
-          <span className="text-xs font-black text-zinc-500 uppercase tracking-[0.1em] text-center">Activities Logged</span>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full pt-8 border-t border-zinc-500/50 text-white animate-in fade-in">
+        <div className="flex flex-col items-center gap-1 min-w-0 pr-1 border-r border-zinc-500/20">
+          <span className="text-xl sm:text-2xl font-black tracking-tight font-mono text-emerald-400 truncate w-full">{activityCount}</span>
+          <span className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-[0.05em] text-center">Logs</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 min-w-0 px-1 border-r border-zinc-500/20">
+          <span className="text-xl sm:text-2xl font-black tracking-tight font-mono text-white truncate w-full">{profile?.followersCount || '1,280'}</span>
+          <span className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-[0.05em] text-center">Followers</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 min-w-0 pl-1">
+          <span className="text-xl sm:text-2xl font-black tracking-tight font-mono text-white truncate w-full">{profile?.followingCount || '340'}</span>
+          <span className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-[0.05em] text-center">Following</span>
         </div>
       </div>
     </div>
