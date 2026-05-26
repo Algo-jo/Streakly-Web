@@ -813,7 +813,7 @@ export default function App() {
 
       {/* Sign Out Confirmation Dialog */}
       <Dialog open={isLogoutConfirmOpen} onOpenChange={setIsLogoutConfirmOpen}>
-        <DialogContent className="bg-zinc-950 border border-zinc-500 rounded-[2rem] p-8 max-w-md w-full text-center">
+        <DialogContent showCloseButton={false} className="bg-zinc-950 border border-zinc-500 rounded-[2rem] p-8 max-w-md w-full text-center">
           <DialogHeader className="mb-4">
             <DialogTitle className="text-xl font-black text-white text-center">
               Are you sure you want to sign out?
