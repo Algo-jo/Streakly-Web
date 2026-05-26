@@ -350,16 +350,14 @@ export default function App() {
                       </Button>
 
                       <Dialog open={isLogModalOpen} onOpenChange={setIsLogModalOpen}>
-                        <DialogContent className={`bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
-                          selectedMode === 'repo' ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
-                        }`}>
+                        <DialogContent className="bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 sm:max-w-[650px] w-full max-h-[95vh] flex flex-col">
                           <DialogHeader className="p-8 pb-0 flex-shrink-0">
                             <DialogTitle className="text-2xl font-bold tracking-tight text-white">
                               {selectedMode === 'repo' ? 'New Category' : 'New Activity'}
                             </DialogTitle>
                           </DialogHeader>
                           
-                          <div className={`p-8 ${selectedMode === 'activity' ? 'overflow-y-auto flex-1 max-h-[calc(95vh-120px)] md:max-h-[calc(92vh-120px)] pr-6' : ''}`}>
+                          <div className="p-8 overflow-y-auto flex-1 max-h-[calc(95vh-120px)] pr-6">
                             <LogForm 
                               onAdd={handleAddLog} 
                               onSuccess={() => setIsLogModalOpen(false)} 
@@ -779,7 +777,7 @@ export default function App() {
            {editingLog && (
              <Dialog open={!!editingLog} onOpenChange={(open) => { if (!open) setEditingLog(null); }}>
                <DialogContent className={`bg-zinc-950 border-zinc-500 rounded-3xl p-0 overflow-hidden transition-all duration-300 ${
-                 editingLog.category === 'code' ? 'sm:max-w-[650px]' : 'sm:max-w-[98vw] xl:max-w-[94vw] h-[95vh] md:h-[92vh] flex flex-col'
+                 editingLog.category === 'code' ? 'sm:max-w-[650px]' : 'sm:max-w-[650px] w-full max-h-[95vh] flex flex-col'
                }`}>
                  <DialogHeader className="p-8 pb-0 flex-shrink-0">
                    <DialogTitle className="text-2xl font-bold tracking-tight text-white flex justify-between items-center pr-4">
@@ -787,7 +785,7 @@ export default function App() {
                      <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest font-mono bg-emerald-500/10 px-2.5 py-1 border border-emerald-500/20 rounded-full">EDITING MODE</span>
                    </DialogTitle>
                  </DialogHeader>
-                 <div className={`p-8 pb-6 ${editingLog.category !== 'code' ? 'overflow-y-auto flex-1 max-h-[calc(95vh-120px)] md:max-h-[calc(92vh-120px)] pr-6' : ''}`}>
+                 <div className="p-8 pb-6 overflow-y-auto flex-1 max-h-[calc(95vh-120px)] pr-6">
                    <LogForm 
                      onAdd={(updatedFields) => {
                        handleUpdateLog(editingLog.id, updatedFields);
