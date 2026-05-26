@@ -33,13 +33,21 @@ export default function App() {
   const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
 
   const handleAuthSuccess = (profileData: any) => {
+    setActiveTab('dashboard');
     setProfile(profileData);
     setIsAuthenticated(true);
     localStorage.setItem('streakly_profile', JSON.stringify(profileData));
     localStorage.setItem('streakly_authenticated', 'true');
   };
 
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+
   const handleLogout = () => {
+    setIsLogoutConfirmOpen(true);
+  };
+
+  const executeLogout = () => {
+    setIsLogoutConfirmOpen(false);
     setIsAuthenticated(false);
     localStorage.removeItem('streakly_authenticated');
   };
@@ -802,6 +810,36 @@ export default function App() {
            )}
          </AnimatePresence>
       </main>
+
+      {/* Sign Out Confirmation Dialog */}
+      <Dialog open={isLogoutConfirmOpen} onOpenChange={setIsLogoutConfirmOpen}>
+        <DialogContent className="bg-zinc-950 border border-zinc-500 rounded-[2rem] p-8 max-w-md w-full text-center">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-xl font-black text-white text-center">
+              Are you sure you want to sign out?
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-zinc-400 font-medium mb-8 leading-relaxed">
+            You will need to sign back in with your credentials to view your dashboard and log entries.
+          </p>
+          <div className="flex gap-4">
+            <Button
+              onClick={() => setIsLogoutConfirmOpen(false)}
+              type="button"
+              className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 h-12 rounded-2xl font-bold transition-all cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={executeLogout}
+              type="button"
+              className="flex-1 bg-red-500 hover:bg-red-400 text-black h-12 rounded-2xl font-bold transition-all shadow-[0_10px_25px_-10px_rgba(239,68,68,0.4)] cursor-pointer"
+            >
+              Yes, Sign Out
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>

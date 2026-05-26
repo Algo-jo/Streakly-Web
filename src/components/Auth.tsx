@@ -284,7 +284,7 @@ export function Auth({ onLoginSuccess }: AuthProps) {
                 type="submit"
                 className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-2xl h-12 mt-4 text-sm transition-all shadow-[0_10px_35px_-10px_rgba(16,185,129,0.4)]"
               >
-                Register
+                Register & Continue
               </Button>
             </form>
 
@@ -419,7 +419,7 @@ export function Auth({ onLoginSuccess }: AuthProps) {
                   type="submit"
                   className="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-2xl px-12 h-12 transition-all shadow-[0_10px_35px_-10px_rgba(16,185,129,0.4)] text-sm"
                 >
-                  Complete Onboarding
+                  Initialize Profile & Continue
                 </Button>
               </div>
             </form>
