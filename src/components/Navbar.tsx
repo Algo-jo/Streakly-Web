@@ -11,12 +11,14 @@ interface NavbarProps {
 export function Navbar({ activeTab, setActiveTab, onLogout }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const tabs = [
+  const tabs = onLogout ? [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'logs', label: 'Category', icon: FolderOpen },
     { id: 'projects', label: 'Activity', icon: Briefcase },
     { id: 'calendar', label: 'History', icon: BarChart3 },
     { id: 'following', label: 'Following', icon: Users },
+  ] : [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }
   ];
 
   const handleTabClick = (tabId: string) => {
@@ -60,14 +62,16 @@ export function Navbar({ activeTab, setActiveTab, onLogout }: NavbarProps) {
 
         {/* Right buttons: Profile & Mobile Toggle */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => handleTabClick('profile')}
-            className={`w-10 h-10 rounded-full bg-zinc-900 border border-zinc-500/60 flex items-center justify-center text-zinc-500 hover:text-white hover:border-emerald-500/50 transition-all duration-300 cursor-pointer ${
-              activeTab === 'profile' ? 'text-emerald-500 border-emerald-500/50 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : ''
-            }`}
-          >
-            <User className="w-5 h-5" />
-          </button>
+          {onLogout && (
+            <button
+              onClick={() => handleTabClick('profile')}
+              className={`w-10 h-10 rounded-full bg-zinc-900 border border-zinc-500/60 flex items-center justify-center text-zinc-500 hover:text-white hover:border-emerald-500/50 transition-all duration-300 cursor-pointer ${
+                activeTab === 'profile' ? 'text-emerald-500 border-emerald-500/50 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : ''
+              }`}
+            >
+              <User className="w-5 h-5" />
+            </button>
+          )}
 
           {/* Hamburger Mobile Toggle Button */}
           <button

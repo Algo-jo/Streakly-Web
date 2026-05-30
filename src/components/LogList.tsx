@@ -1,9 +1,11 @@
-import React from 'react';
-import { WorkLog } from '../lib/gemini';
+import React, { useState } from 'react';
+import { WorkLog } from '../lib/types';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Code, FileText, BookOpen, MoreHorizontal, Clock, Github, Folder, Paperclip, Download, Edit2, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface LogListProps {
   logs: WorkLog[];
@@ -20,9 +22,23 @@ const iconMap = {
 
 export function LogList({ logs, onEdit, onDelete }: LogListProps) {
   const sortedLogs = [...logs].sort((a, b) => b.timestamp - a.timestamp);
+  const [activeImageFile, setActiveImageFile] = useState<{ name: string; previewUrl: string } | null>(null);
 
-  const handleSimulatedDownload = (fileName: string) => {
-    alert(`Downloading attachment: ${fileName} (simulated)`);
+  const handleDownload = async (url: string, name: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      window.open(url, '_blank');
+    }
   };
 
   if (logs.length === 0) {
@@ -84,10 +100,6 @@ export function LogList({ logs, onEdit, onDelete }: LogListProps) {
                     {displayLevel} LEVEL
                   </Badge>
                 )}
-
-                <Badge variant="outline" className="text-[9px] sm:text-[10px] font-bold tracking-widest uppercase border-zinc-500 text-zinc-500 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-zinc-900/20">
-                  {log.category === 'code' ? 'Category log' : 'Activity log'}
-                </Badge>
 
                 {onEdit && (
                   <button
@@ -158,7 +170,11 @@ export function LogList({ logs, onEdit, onDelete }: LogListProps) {
                   {log.files.map((file, idx) => (
                     <div 
                       key={idx} 
-                      onClick={() => handleSimulatedDownload(file.name)}
+                      onClick={() => {
+                        if (file.previewUrl) {
+                          setActiveImageFile({ name: file.name, previewUrl: file.previewUrl });
+                        }
+                      }}
                       className="flex items-center justify-between p-2.5 bg-zinc-950 hover:bg-zinc-900 border border-zinc-900 hover:border-zinc-500 rounded-xl cursor-pointer transition-all group/file text-xs"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -185,6 +201,46 @@ export function LogList({ logs, onEdit, onDelete }: LogListProps) {
           </div>
         );
       })}
+
+      {/* Visual Image Preview and Download Dialog Modal */}
+      <Dialog open={!!activeImageFile} onOpenChange={(open) => { if (!open) setActiveImageFile(null); }}>
+        <DialogContent className="bg-zinc-950 border border-zinc-500 rounded-[2rem] p-8 max-w-2xl w-full text-white flex flex-col items-center">
+          <DialogHeader className="w-full border-b border-zinc-900 pb-3 mb-4">
+            <DialogTitle className="text-lg font-black text-white truncate pr-6">
+              Pratinjau Lampiran: {activeImageFile?.name}
+            </DialogTitle>
+          </DialogHeader>
+
+          {activeImageFile?.previewUrl && (
+            <div className="w-full max-h-[60vh] rounded-2xl overflow-hidden border border-zinc-900 bg-zinc-900/50 flex items-center justify-center mb-6">
+              <img 
+                src={activeImageFile.previewUrl} 
+                alt={activeImageFile.name} 
+                className="max-w-full max-h-[60vh] object-contain"
+              />
+            </div>
+          )}
+
+          <div className="flex gap-4 w-full">
+            <Button
+              onClick={() => setActiveImageFile(null)}
+              type="button"
+              className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 h-12 rounded-2xl font-bold transition-all cursor-pointer"
+            >
+              Tutup
+            </Button>
+            {activeImageFile && (
+              <Button
+                onClick={() => handleDownload(activeImageFile.previewUrl, activeImageFile.name)}
+                type="button"
+                className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black h-12 rounded-2xl font-bold transition-all shadow-[0_10px_25px_-10px_rgba(16,185,129,0.4)] cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" /> Unduh Gambar
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

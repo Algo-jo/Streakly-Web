@@ -10,7 +10,7 @@ import {
   DialogTrigger 
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { WorkLog } from '../lib/gemini';
+import { WorkLog } from '../lib/types';
 import { 
   Calendar, BarChart3, Trophy, Check, ArrowRight, ArrowLeft, Clock,
   FolderOpen, Notebook, FileText, HelpCircle, Flame, Tag, AlertTriangle 
@@ -56,7 +56,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
     
     const thisMonthLogs = logs.filter(log => {
       try {
-        const d = parseISO(log.dateStr);
+        const d = parseISO(log.date_str);
         return d.getFullYear() === curYear && d.getMonth() === curMonth;
       } catch (e) {
         const d = new Date(log.timestamp);
@@ -64,7 +64,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
       }
     });
     
-    return new Set(thisMonthLogs.map(l => l.dateStr)).size;
+    return new Set(thisMonthLogs.map(l => l.date_str)).size;
   }, [logs]);
 
   const consistencyPercentage = useMemo(() => {
@@ -79,14 +79,14 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
       const totalDaysInMonth = new Date(curYear, m + 1, 0).getDate();
       const logsInMonth = logs.filter(log => {
         try {
-          const d = parseISO(log.dateStr);
+          const d = parseISO(log.date_str);
           return d.getFullYear() === curYear && d.getMonth() === m;
         } catch (e) {
           const d = new Date(log.timestamp);
           return d.getFullYear() === curYear && d.getMonth() === m;
         }
       });
-      const loggedDays = new Set(logsInMonth.map(l => l.dateStr)).size;
+      const loggedDays = new Set(logsInMonth.map(l => l.date_str)).size;
       totalMonthlyRatios += (loggedDays / totalDaysInMonth);
     }
     
@@ -107,7 +107,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
 
   const getContributionLevel = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
-    const count = logs.filter(log => log.dateStr === dateStr).length;
+    const count = logs.filter(log => log.date_str === dateStr).length;
     if (count === 0) return 0;
     if (count === 1) return 1;
     if (count <= 3) return 2;
@@ -138,7 +138,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
   // Calculate high-level stats for the detailed analysis view
   const stats = useMemo(() => {
     const totalLogs = logs.length;
-    const uniqueActiveDays = new Set(logs.map(l => l.dateStr)).size;
+    const uniqueActiveDays = new Set(logs.map(l => l.date_str)).size;
     
     // Developer Consistency Grade
     let grade = 'C';
@@ -170,7 +170,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
     const daysLogCounts = [0, 0, 0, 0, 0, 0, 0];
     logs.forEach(l => {
       try {
-        const d = parseISO(l.dateStr);
+        const d = parseISO(l.date_str);
         daysLogCounts[d.getDay()] += 1;
       } catch (e) {
         // Fallback for timestamp
@@ -204,7 +204,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
 
   // Selected date logs filtered
   const selectedDateLogs = useMemo(() => {
-    return logs.filter(log => log.dateStr === selectedDateStr);
+    return logs.filter(log => log.date_str === selectedDateStr);
   }, [logs, selectedDateStr]);
 
   const handleNextDay = () => {
@@ -273,59 +273,6 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
           {/* Modal Grid Section */}
           <div className="flex-1 overflow-y-auto pr-2 py-6 space-y-8 max-h-[calc(88vh-140px)]">
             
-            {/* High-Level Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              
-              {/* Highest Streak Card */}
-              <div className="bg-[#0F1317] border border-zinc-900 p-5 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-yellow-500 border border-zinc-500">
-                  <Flame className="w-6 h-6 fill-yellow-500/20 text-yellow-500 animate-pulse" />
-                </div>
-                <div className="space-y-0.5">
-                  <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block">Highest Streak</span>
-                  <span className="text-xl font-black text-yellow-500 font-mono">{finalHighestStreak} Days</span>
-                  <span className="text-[10px] text-zinc-400 block font-semibold">Your ultimate consistency peak</span>
-                </div>
-              </div>
-
-              {/* Total Log (All Time) Card */}
-              <div className="bg-[#0F1317] border border-zinc-900 p-5 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-zinc-950 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
-                  <Trophy className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div className="space-y-0.5">
-                  <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block">Total Log (All Time)</span>
-                  <span className="text-xl font-black text-emerald-400 font-mono">{logs.length} Logs</span>
-                  <span className="text-[10px] text-zinc-400 block font-semibold">Across all your dev sessions</span>
-                </div>
-              </div>
-
-              {/* Total Day Log This Month Card */}
-              <div className="bg-[#0F1317] border border-zinc-900 p-5 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500">
-                  <Calendar className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div className="space-y-0.5">
-                  <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block">Logged Days This Month</span>
-                  <span className="text-xl font-black text-white font-mono">{thisMonthActiveDays} Days</span>
-                  <span className="text-[10px] text-[#94A3B8] block font-semibold">In current calendar month</span>
-                </div>
-              </div>
-
-              {/* Consistency Percentage Card */}
-              <div className="bg-[#0F1317] border border-zinc-900 p-5 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-zinc-950 flex items-center justify-center text-emerald-400 border border-zinc-500">
-                  <Clock className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div className="space-y-0.5">
-                  <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider block">Consistency Percentage</span>
-                  <span className="text-xl font-black text-white font-mono">{consistencyPercentage}%</span>
-                  <span className="text-[10px] text-[#94A3B8] block font-semibold">Active frequency ratio</span>
-                </div>
-              </div>
-
-            </div>
-
             {/* Feed of selected date */}
             <div className="pt-4">
               <div className="bg-[#0F1317] border border-zinc-900 rounded-[2rem] p-6 flex flex-col min-h-[350px] md:min-h-[400px]">
@@ -397,8 +344,8 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
                         <AlertTriangle className="w-6 h-6 text-zinc-600" />
                       </div>
                       <div className="space-y-1">
-                        <p className="text-sm font-extrabold text-zinc-400">Zero activities on this day</p>
-                        <p className="text-xs text-zinc-500 max-w-sm leading-relaxed">You haven't logged any repos, codes, commits, or notes. Keep the chain going!</p>
+                        <p className="text-sm font-extrabold text-zinc-400">Belum ada aktivitas pada hari ini</p>
+                        <p className="text-xs text-zinc-500 max-w-sm leading-relaxed">Anda belum mencatat aktivitas apa pun untuk kategori mana pun. Tetap konsisten dan jaga streak Anda!</p>
                       </div>
                     </div>
                   )}
@@ -435,7 +382,7 @@ export function ContributionGraph({ logs = [], highestStreak }: ContributionGrap
                   const level = getContributionLevel(day);
                   const isToday = isSameDay(day, today);
                   const dateStr = format(day, 'yyyy-MM-dd');
-                  const logCount = logs.filter(l => l.dateStr === dateStr).length;
+                  const logCount = logs.filter(l => l.date_str === dateStr).length;
                   
                   return (
                     <button

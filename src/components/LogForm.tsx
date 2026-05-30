@@ -2,71 +2,88 @@ import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Folder, Plus, Paperclip, Check } from 'lucide-react';
+import { Folder, Plus, Paperclip, Check, Loader2 } from 'lucide-react';
+import { uploadAttachment } from '../lib/supabase';
+import { Category } from '../lib/types';
 
 interface LogFormProps {
-  onAdd: (log: { 
-    title: string; 
-    content: string; 
-    category: string; 
-    priority?: 'NONE' | 'LOW' | 'MID' | 'HIGH';
-    files?: { name: string; size: string; previewUrl?: string }[];
-    metadata?: any;
+  onAdd: (data: { 
+    category_id?: string;
+    category_name?: string; // used for creating new category
+    description?: string; 
+    activity_level?: 'LOW' | 'MID' | 'HIGH';
+    files?: { name: string; size: string; previewUrl: string }[];
   }) => void;
   mode: 'repo' | 'activity';
-  existingRepos?: string[];
-  initialData?: {
-    id: string;
-    title: string;
-    content: string;
-    category: string;
-    priority?: 'NONE' | 'LOW' | 'MID' | 'HIGH';
-    files?: { name: string; size: string; previewUrl?: string }[];
-    metadata?: any;
-  };
-  onStepChange?: (step: number) => void;
+  categories: Category[];
+  initialData?: any;
+  onSuccess?: () => void;
 }
 
-export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialData, onStepChange }: LogFormProps & { onSuccess?: () => void }) {
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [quickDesc, setQuickDesc] = useState(initialData?.metadata?.description || '');
-  const [content, setContent] = useState(initialData?.content || '');
-  const [category] = useState(initialData?.category || (mode === 'repo' ? 'code' : 'note'));
-  const [repo, setRepo] = useState(initialData?.metadata?.repo || '');
-  const [folder, setFolder] = useState(initialData?.metadata?.folder || '');
-  const [tags, setTags] = useState(initialData?.metadata?.tags?.join(', ') || '');
-  const [priority, setPriority] = useState<'NONE' | 'LOW' | 'MID' | 'HIGH'>(initialData?.priority || 'LOW');
-  const [files, setFiles] = useState<{ name: string; size: string; previewUrl?: string }[]>(initialData?.files || []);
+export function LogForm({ onAdd, onSuccess, mode, categories = [], initialData }: LogFormProps) {
+  // Category mode states
+  const [newCategoryName, setNewCategoryName] = useState('');
+
+  // Activity mode states
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    initialData?.category_id || (categories.length > 0 ? categories[0].id : '')
+  );
+  const [description, setDescription] = useState(initialData?.description || '');
+  const [priority, setPriority] = useState<'LOW' | 'MID' | 'HIGH'>(
+    initialData?.activity_level || 'LOW'
+  );
+  const [files, setFiles] = useState<{ name: string; size: string; previewUrl: string; uploading?: boolean }[]>(
+    initialData?.files || []
+  );
+
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // File uploading handler
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      addFiles(e.target.files);
+      await uploadFiles(e.target.files);
     }
   };
 
-  const addFiles = (fileList: FileList) => {
-    const newFiles: { name: string; size: string; previewUrl?: string }[] = [];
+  const uploadFiles = async (fileList: FileList) => {
+    setUploadError('');
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
-      let sizeStr = `${(file.size / 1024).toFixed(1)} KB`;
-      if (file.size > 1024 * 1024) {
-        sizeStr = `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
-      }
       
-      const fileObj: { name: string; size: string; previewUrl?: string } = {
+      // Add to state with uploading = true
+      const tempId = Math.random().toString();
+      const newFileObj = {
         name: file.name,
-        size: sizeStr,
+        size: `${(file.size / 1024).toFixed(1)} KB`,
+        previewUrl: '',
+        uploading: true
       };
-
-      if (file.type.startsWith('image/')) {
-        fileObj.previewUrl = URL.createObjectURL(file);
-      }
       
-      newFiles.push(fileObj);
+      setFiles(prev => [...prev, newFileObj]);
+
+      try {
+        const uploadedFile = await uploadAttachment(file);
+        
+        // Update state with uploaded public URL
+        setFiles(prev => prev.map(f => {
+          if (f.name === file.name && f.uploading) {
+            return {
+              ...f,
+              previewUrl: uploadedFile.previewUrl,
+              uploading: false
+            };
+          }
+          return f;
+        }));
+      } catch (err: any) {
+        console.error('File upload failed:', err);
+        setUploadError(`Gagal mengunggah file: ${file.name}`);
+        // Remove from list if failed
+        setFiles(prev => prev.filter(f => !(f.name === file.name && f.uploading)));
+      }
     }
-    setFiles(prev => [...prev, ...newFiles]);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -78,11 +95,11 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
     setIsDragging(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      addFiles(e.dataTransfer.files);
+      await uploadFiles(e.dataTransfer.files);
     }
   };
 
@@ -92,35 +109,41 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title) return;
-    
-    const finalContent = mode === 'repo' ? (content || `Category ${title} created.`) : (content || title);
-    
-    const metadata = {
-      repo: mode === 'repo' ? title : (repo || undefined),
-      folder: mode === 'repo' ? folder : undefined,
-      tags: tags.split(',').map(t => t.trim()).filter(t => t),
-      description: mode === 'activity' ? quickDesc : undefined,
-    };
+    setUploadError('');
 
-    onAdd({ 
-      title, 
-      content: finalContent, 
-      category, 
-      priority,
-      files,
-      metadata 
-    });
+    if (mode === 'repo') {
+      if (!newCategoryName.trim()) return;
+      onAdd({
+        category_name: newCategoryName.trim()
+      });
+      setNewCategoryName('');
+    } else {
+      if (!selectedCategoryId) {
+        alert('Harap buat kategori terlebih dahulu sebelum mencatat aktivitas!');
+        return;
+      }
 
-    setTitle('');
-    setQuickDesc('');
-    setContent('');
-    setRepo('');
-    setFolder('');
-    setTags('');
-    setPriority('LOW');
-    setFiles([]);
-    if (onStepChange) onStepChange(1);
+      // Check if any file is still uploading
+      if (files.some(f => f.uploading)) {
+        alert('Harap tunggu hingga semua file selesai diunggah.');
+        return;
+      }
+
+      onAdd({
+        category_id: selectedCategoryId,
+        description: description.trim(),
+        activity_level: priority,
+        files: files.map(f => ({
+          name: f.name,
+          size: f.size,
+          previewUrl: f.previewUrl
+        }))
+      });
+
+      setDescription('');
+      setFiles([]);
+    }
+
     if (onSuccess) onSuccess();
   };
 
@@ -128,17 +151,17 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
     <div className="bg-zinc-950 p-1">
       <form onSubmit={handleSubmit} className="space-y-6">
         {mode === 'repo' ? (
-          /* New Category: Simple input layout */
+          /* New Category */
           <div className="space-y-5 py-2 animate-in fade-in duration-300">
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                CATEGORY NAME <span className="text-red-500">*</span>
+                NAMA KATEGORI <span className="text-red-500">*</span>
               </label>
               <Input
-                placeholder="e.g. Designing UI"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="bg-zinc-900/50 border-zinc-500 h-14 text-base font-bold focus:ring-emerald-500/50 rounded-2xl px-6"
+                placeholder="e.g. Gym, Membaca Buku, Belajar"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                className="bg-zinc-900/50 border-zinc-500 h-14 text-base font-bold focus:ring-emerald-500/50 rounded-2xl px-6 text-white"
                 required
               />
             </div>
@@ -146,31 +169,35 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
             <div className="pt-4 border-t border-zinc-900">
               <Button 
                 type="submit" 
-                disabled={!title}
-                className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:hover:bg-emerald-500 disabled:cursor-not-allowed text-black font-extrabold text-base rounded-2xl transition-all flex items-center justify-center gap-2 shadow-[0_10px_25px_-10px_rgba(16,185,129,0.4)] cursor-pointer"
+                disabled={!newCategoryName.trim()}
+                className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-extrabold text-base rounded-2xl transition-all flex items-center justify-center gap-2 shadow-[0_10px_25px_-10px_rgba(16,185,129,0.4)] cursor-pointer"
               >
-                <Check className="w-5 h-5" /> CREATE CATEGORY
+                <Check className="w-5 h-5" /> BUAT KATEGORI
               </Button>
             </div>
           </div>
         ) : (
-          /* New Activity / Edit Activity: Sleek Single-Column Layout */
+          /* New Activity / Edit Activity */
           <div className="max-w-xl mx-auto space-y-6 animate-in fade-in duration-300">
             
             {/* Select Category */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">SELECT CATEGORY</label>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">KATEGORI AKTIVITAS</label>
               <div className="relative">
                 <Folder className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                 <select
-                  value={repo}
-                  onChange={(e) => setRepo(e.target.value)}
+                  value={selectedCategoryId}
+                  onChange={(e) => setSelectedCategoryId(e.target.value)}
+                  required
                   className="w-full bg-[#11161B] border border-zinc-500/80 pl-11 pr-10 h-13 rounded-2xl text-xs font-mono appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-zinc-300 cursor-pointer"
                 >
-                  <option value="">None</option>
-                  {existingRepos.map(r => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
+                  {categories.length === 0 ? (
+                    <option value="">(Buat Kategori terlebih dahulu)</option>
+                  ) : (
+                    categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))
+                  )}
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 text-xs">
                   ▼
@@ -181,24 +208,19 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
             {/* Description */}
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                DESCRIPTION <span className="text-red-500">*</span>
+                DESKRIPSI AKTIVITAS <span className="text-zinc-500 text-[8px] font-normal tracking-wide">(OPSIONAL)</span>
               </label>
               <Textarea
-                placeholder="e.g. Built the auth forms and setup validation plus configured the router..."
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  // Sync key inputs to content so any legacy visualizers keep consistency
-                  setContent(e.target.value);
-                }}
-                className="bg-[#11161B] border-zinc-500/80 min-h-[100px] text-xs font-semibold focus:ring-emerald-500/50 rounded-2xl p-4.5 resize-none leading-relaxed"
-                required
+                placeholder="e.g. Melakukan angkat beban dada 4 set, lari treadmil 15 menit..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="bg-[#11161B] border-zinc-500/80 min-h-[100px] text-xs font-semibold focus:ring-emerald-500/50 rounded-2xl p-4.5 resize-none leading-relaxed text-white"
               />
             </div>
 
             {/* Activity Level selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">ACTIVITY LEVEL</label>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">BEBAN AKTIVITAS</label>
               <div className="grid grid-cols-3 gap-2">
                 {(['EASY', 'MEDIUM', 'HARD'] as const).map((p) => {
                   const dbVal = p === 'EASY' ? 'LOW' : p === 'MEDIUM' ? 'MID' : 'HIGH';
@@ -225,7 +247,7 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
 
             {/* Attachment Upload */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">UPLOAD ATTACHMENTS (OPTIONAL)</label>
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">LAMPIRAN (OPSIONAL)</label>
               <div
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -247,10 +269,14 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                 <div className="flex items-center justify-center gap-3">
                   <Paperclip className="w-4 h-4 text-emerald-500 shrink-0" />
                   <p className="text-xs font-bold text-zinc-300">
-                    Drag files here or <span className="text-emerald-500 font-extrabold underline decoration-wavy">browse files</span>
+                    Seret file ke sini atau <span className="text-emerald-500 font-extrabold underline decoration-wavy">pilih file komputer</span>
                   </p>
                 </div>
               </div>
+
+              {uploadError && (
+                <p className="text-[10px] text-red-400 font-bold ml-1">{uploadError}</p>
+              )}
 
               {/* Uploaded File list */}
               {files.length > 0 && (
@@ -258,7 +284,11 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                   {files.map((file, idx) => (
                     <div key={idx} className="flex items-center justify-between p-2.5 bg-black/40 rounded-xl border border-zinc-500/40 text-xs">
                       <div className="flex items-center gap-2 min-w-0">
-                        {file.previewUrl ? (
+                        {file.uploading ? (
+                          <div className="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center border border-zinc-500 shrink-0">
+                            <Loader2 className="w-4 h-4 text-emerald-500 animate-spin" />
+                          </div>
+                        ) : file.previewUrl ? (
                           <img src={file.previewUrl} alt={file.name} className="w-8 h-8 object-cover rounded-lg border border-zinc-500 shrink-0" />
                         ) : (
                           <div className="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center border border-zinc-500 shrink-0 text-zinc-500">
@@ -267,16 +297,18 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
                         )}
                         <div className="min-w-0">
                           <p className="font-bold text-zinc-200 truncate pr-2 leading-tight">{file.name}</p>
-                          <p className="text-[10px] text-zinc-500 mt-0.5">{file.size}</p>
+                          <p className="text-[10px] text-zinc-500 mt-0.5">{file.uploading ? 'Mengunggah...' : file.size}</p>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
-                        className="p-1.5 hover:bg-zinc-800 text-zinc-500 hover:text-red-400 rounded-lg transition-colors shrink-0 cursor-pointer"
-                      >
-                        <Plus className="w-3 h-3 rotate-45" />
-                      </button>
+                      {!file.uploading && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
+                          className="p-1.5 hover:bg-zinc-800 text-zinc-500 hover:text-red-400 rounded-lg transition-colors shrink-0 cursor-pointer"
+                        >
+                          <Plus className="w-3 h-3 rotate-45" />
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -287,10 +319,10 @@ export function LogForm({ onAdd, onSuccess, mode, existingRepos = [], initialDat
             <div className="pt-6 border-t border-zinc-900 flex justify-end">
               <Button 
                 type="submit" 
-                disabled={!title}
-                className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:hover:bg-emerald-500 disabled:cursor-not-allowed text-black font-extrabold text-base rounded-2xl transition-all flex items-center justify-center gap-2 shadow-[0_10px_25px_-10px_rgba(16,185,129,0.4)] cursor-pointer"
+                disabled={!selectedCategoryId || files.some(f => f.uploading)}
+                className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-extrabold text-base rounded-2xl transition-all flex items-center justify-center gap-2 shadow-[0_10px_25px_-10px_rgba(16,185,129,0.4)] cursor-pointer"
               >
-                <Check className="w-5 h-5" /> {initialData ? 'UPDATE ACCOMPLISHMENTS' : 'SAVE SPECIFICATION'}
+                <Check className="w-5 h-5" /> {initialData ? 'UPDATE AKTIVITAS' : 'CATAT AKTIVITAS'}
               </Button>
             </div>
           </div>

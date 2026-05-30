@@ -9,9 +9,11 @@ interface ProfileCardProps {
     name: string;
     role: string;
     bio: string;
+    avatar_url?: string;
     avatarUrl?: string;
-    followersCount?: string;
-    followingCount?: string;
+    followers_count?: number;
+    following_count?: number;
+    followed_ids?: string[];
     highestStreak?: string;
   };
   onEditClick?: () => void;
@@ -22,7 +24,7 @@ export function ProfileCard({ streak, activityCount, profile, onEditClick, onLog
   const name = profile?.name || 'Algo-Jo';
   const role = profile?.role || 'Full-Stack Developer';
   const bio = profile?.bio || 'Keep building, keep growing.';
-  const avatarUrl = profile?.avatarUrl || '';
+  const avatarUrl = profile?.avatar_url || profile?.avatarUrl || '';
   
   const currentInitials = name
     ? name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
@@ -54,27 +56,29 @@ export function ProfileCard({ streak, activityCount, profile, onEditClick, onLog
         <p className="text-sm text-zinc-400 font-medium px-4">{bio}</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 w-full mb-10">
-        <Button 
-          onClick={onEditClick}
-          className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-2xl h-14 transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] text-base select-none w-full"
-        >
-          <Edit2 className="w-4 h-4 mr-2" />
-          Edit Profile
-        </Button>
-      </div>
+      {onEditClick && (
+        <div className="flex flex-col sm:flex-row gap-3 w-full mb-10">
+          <Button 
+            onClick={onEditClick}
+            className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-2xl h-14 transition-all shadow-[0_10px_30px_-10px_rgba(16,185,129,0.4)] text-base select-none w-full"
+          >
+            <Edit2 className="w-4 h-4 mr-2" />
+            Edit Profile
+          </Button>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full pt-8 border-t border-zinc-500/50 text-white animate-in fade-in">
         <div className="flex flex-col items-center gap-1 min-w-0 pr-1 border-r border-zinc-500/20">
           <span className="text-xl sm:text-2xl font-black tracking-tight font-mono text-emerald-400 truncate w-full">{activityCount}</span>
-          <span className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-[0.05em] text-center">Logs</span>
+          <span className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-[0.05em] text-center">Aktivitas</span>
         </div>
         <div className="flex flex-col items-center gap-1 min-w-0 px-1 border-r border-zinc-500/20">
-          <span className="text-xl sm:text-2xl font-black tracking-tight font-mono text-white truncate w-full">{profile?.followersCount || '1,280'}</span>
+          <span className="text-xl sm:text-2xl font-black tracking-tight font-mono text-white truncate w-full">{profile?.followers_count || '0'}</span>
           <span className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-[0.05em] text-center">Followers</span>
         </div>
         <div className="flex flex-col items-center gap-1 min-w-0 pl-1">
-          <span className="text-xl sm:text-2xl font-black tracking-tight font-mono text-white truncate w-full">{profile?.followingCount || '340'}</span>
+          <span className="text-xl sm:text-2xl font-black tracking-tight font-mono text-white truncate w-full">{profile?.following_count || profile?.followed_ids?.length || 0}</span>
           <span className="text-[10px] sm:text-xs font-black text-zinc-500 uppercase tracking-[0.05em] text-center">Following</span>
         </div>
       </div>
